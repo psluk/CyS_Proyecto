@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fonts are variable */
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./fonts/Rubik-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Rubik";
+  font-style: italic;
+  font-weight: 400;
+  src: url("./fonts/Rubik-Italic.ttf") format("truetype");
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  @apply font-sans;
+}
+
+html,
+body,
+#root {
+  @apply min-h-[100dvh] w-full;
+}
+
+#root {
+  @apply flex flex-col items-center;
+}
+
+#root > main {
+  @apply flex grow flex-col items-center justify-center pt-20;
+}
+
+a {
+  @apply transition-colors;
+}

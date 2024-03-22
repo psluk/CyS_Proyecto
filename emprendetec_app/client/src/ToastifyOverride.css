@@ -1,0 +1,10 @@
+:root {
+    --toastify-font-family: initial;
+    --toastify-color-light: #323232;
+    --toastify-text-color-light: white;
+}
+
+.Toastify__close-button--light {
+    color: white;
+    opacity: 1;
+}
