@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Input, Button } from "@material-tailwind/react";
 import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 export default function Login() {
   const [data, setData] = useState({});
+  const [togglePassword, setTogglePassword] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(data);
   };
+
+  useEffect(() => {
+
+  }, []);
 
   return (
     <>
@@ -27,16 +34,27 @@ export default function Login() {
             pattern=".+@estudiantec.cr"
             onChange={(e) => setData({ ...data, email: e.target.value })}
             className="!border-2"
+            autoComplete="email"
           />
-          <Input
-            type="password"
-            label="Contraseña"
-            color="teal"
-            size="lg"
-            required={true}
-            className="!border-2"
-            onChange={(e) => setData({ ...data, password: e.target.value })}
-          />
+          <div className="relative flex w-full">
+            <Input
+              type={togglePassword ? "text" : "password"}
+              label="Contraseña"
+              color="teal"
+              size="lg"
+              required={true}
+              className="!border-2 pr-10"
+              containerProps={{className:""}}
+              onChange={(e) => setData({ ...data, password: e.target.value })}
+              autoComplete="current-password"
+            />
+              <FontAwesomeIcon
+                icon={ togglePassword? faEyeSlash: faEye}
+                className="absolute right-3 top-3 cursor-pointer rounded text-teal-600 hover:text-teal-900"
+                onClick={() => setTogglePassword(!togglePassword)}
+              />
+          </div>
+
           <Button color="teal" size="lg" className="w-full" type="submit">
             Iniciar Sesión
           </Button>

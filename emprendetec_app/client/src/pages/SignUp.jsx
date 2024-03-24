@@ -1,9 +1,31 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Input, Button } from "@material-tailwind/react";
-
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export default function Signup() {
-  const [data, setData] = useState({});
+  const [data, setData] = useState({
+    name: "",
+    lastname: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [togglePassword, setTogglePassword] = useState(false);
+  const [toggleConfirmPassword, setToggleConfirmPassword] = useState(false);
+  const [isPasswordMismatch, setIsPasswordMismatch] = useState(false);
+
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setData({ ...data, [name]: value });
+
+    if (data.confirmPassword !== undefined && data.confirmPassword !== "") {
+      const password = name === "password" ? value : data.password;
+      const confirmPassword =
+        name === "confirmPassword" ? value : data.confirmPassword;
+      setIsPasswordMismatch(password !== confirmPassword);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -26,6 +48,7 @@ export default function Signup() {
               required={true}
               onChange={(e) => setData({ ...data, name: e.target.value })}
               className="!border-2 "
+              autocomplete="given-name"
             />
             <Input
               type="text"
@@ -35,6 +58,7 @@ export default function Signup() {
               required={true}
               onChange={(e) => setData({ ...data, lastname: e.target.value })}
               className="!border-2"
+              autocomplete="family-name"
             />
           </div>
 
@@ -47,16 +71,45 @@ export default function Signup() {
             pattern=".+@estudiantec.cr"
             onChange={(e) => setData({ ...data, email: e.target.value })}
             className="!border-2"
+            autocomplete="email"
           />
-          <Input
-            type="password"
-            label="Contraseña"
-            color="teal"
-            size="lg"
-            required={true}
-            className="!border-2"
-            onChange={(e) => setData({ ...data, password: e.target.value })}
-          />
+          <div className="relative flex w-full">
+            <Input
+              type={togglePassword ? "text" : "password"}
+              name="password"
+              label="Contraseña"
+              color="teal"
+              size="lg"
+              required={true}
+              onChange={handlePasswordChange}
+              className="!border-2 pr-10"
+              autocomplete="new-password"
+            />
+            <FontAwesomeIcon
+              icon={togglePassword ? faEyeSlash : faEye}
+              className="absolute right-3 top-3 cursor-pointer rounded text-teal-600 hover:text-teal-900"
+              onClick={() => setTogglePassword(!togglePassword)}
+            />
+          </div>
+          <div className="relative flex w-full">
+            <Input
+              type={toggleConfirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              label="Confirmar contraseña"
+              color="teal"
+              size="lg"
+              required={true}
+              error={isPasswordMismatch}
+              onChange={handlePasswordChange}
+              className="!border-2 pr-10"
+              autocomplete="new-password"
+            />
+            <FontAwesomeIcon
+              icon={toggleConfirmPassword ? faEyeSlash : faEye}
+              className="absolute right-3 top-3 cursor-pointer rounded text-teal-600 hover:text-teal-900"
+              onClick={() => setToggleConfirmPassword(!toggleConfirmPassword)}
+            />
+          </div>
           <Button color="teal" size="lg" className="w-full" type="submit">
             Registrarse
           </Button>
