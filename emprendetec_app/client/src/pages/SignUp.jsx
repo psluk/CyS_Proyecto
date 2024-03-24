@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Input, Button } from "@material-tailwind/react";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 export default function Signup() {
   const [data, setData] = useState({
     name: "",
@@ -51,7 +52,7 @@ export default function Signup() {
               required={true}
               onChange={(e) => setData({ ...data, name: e.target.value })}
               className="!border-2 "
-              autocomplete="given-name"
+              autoComplete="given-name"
             />
             <Input
               type="text"
@@ -61,7 +62,7 @@ export default function Signup() {
               required={true}
               onChange={(e) => setData({ ...data, lastname: e.target.value })}
               className="!border-2"
-              autocomplete="family-name"
+              autoComplete="family-name"
             />
           </div>
 
@@ -74,7 +75,7 @@ export default function Signup() {
             pattern=".+@estudiantec.cr"
             onChange={(e) => setData({ ...data, email: e.target.value })}
             className="!border-2"
-            autocomplete="email"
+            autoComplete="email"
           />
           <div className="relative flex w-full">
             <Input
@@ -86,7 +87,7 @@ export default function Signup() {
               required={true}
               onChange={handlePasswordChange}
               className="!border-2 pr-10"
-              autocomplete="new-password"
+              autoComplete="new-password"
             />
             <FontAwesomeIcon
               icon={togglePassword ? faEyeSlash : faEye}
@@ -105,7 +106,7 @@ export default function Signup() {
               error={isPasswordMismatch}
               onChange={handlePasswordChange}
               className="!border-2 pr-10"
-              autocomplete="new-password"
+              autoComplete="new-password"
             />
             <FontAwesomeIcon
               icon={toggleConfirmPassword ? faEyeSlash : faEye}
