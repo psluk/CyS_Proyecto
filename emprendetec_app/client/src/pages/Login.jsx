@@ -9,14 +9,12 @@ export default function Login() {
   const [data, setData] = useState({});
   const [togglePassword, setTogglePassword] = useState(false);
 
+  // Function to handle the form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(data);
   };
 
-  useEffect(() => {
-
-  }, []);
 
   return (
     <>

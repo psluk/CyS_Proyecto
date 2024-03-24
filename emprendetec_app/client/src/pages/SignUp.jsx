@@ -15,10 +15,12 @@ export default function Signup() {
   const [toggleConfirmPassword, setToggleConfirmPassword] = useState(false);
   const [isPasswordMismatch, setIsPasswordMismatch] = useState(false);
 
+  // Function to handle the change of the password and confirm password inputs
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setData({ ...data, [name]: value });
 
+    // Check if the password and confirm password match
     if (data.confirmPassword !== undefined && data.confirmPassword !== "") {
       const password = name === "password" ? value : data.password;
       const confirmPassword =
@@ -27,6 +29,7 @@ export default function Signup() {
     }
   };
 
+  // Function to handle the form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(data);
@@ -39,7 +42,7 @@ export default function Signup() {
           Registrarse
         </h1>
         <form className="w-full max-w-md space-y-4" onSubmit={handleSubmit}>
-          <div className="flex flex-row gap-4 max-sm:flex-col">
+          <div className="flex flex-row gap-4 max-sm:flex-col"> 
             <Input
               type="text"
               label="Nombre"
