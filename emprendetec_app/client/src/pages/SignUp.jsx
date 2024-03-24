@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Input, Button } from "@material-tailwind/react";
 
 export default function Signup() {
-  const [data, setData] = useState({ name: "", email: "", password: "" });
+  const [data, setData] = useState({});
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -16,16 +16,28 @@ export default function Signup() {
         <h1 className="text-center font-sans text-2xl font-bold text-teal-900 sm:text-3xl lg:text-5xl">
           Registrarse
         </h1>
-        <form className="w-full max-w-96 space-y-4" onSubmit={handleSubmit}>
-          <Input
-            type="text"
-            label="Nombre"
-            color="teal"
-            size="lg"
-            required={true}
-            onChange={(e) => setData({ ...data, name: e.target.value })}
-            className="!border-2"
-          />
+        <form className="w-full max-w-md space-y-4" onSubmit={handleSubmit}>
+          <div className="flex flex-row gap-4 max-sm:flex-col">
+            <Input
+              type="text"
+              label="Nombre"
+              color="teal"
+              size="lg"
+              required={true}
+              onChange={(e) => setData({ ...data, name: e.target.value })}
+              className="!border-2 "
+            />
+            <Input
+              type="text"
+              label="Apellidos"
+              color="teal"
+              size="lg"
+              required={true}
+              onChange={(e) => setData({ ...data, lastname: e.target.value })}
+              className="!border-2"
+            />
+          </div>
+
           <Input
             type="email"
             label="Correo institucional"
@@ -52,7 +64,7 @@ export default function Signup() {
           <p className="w-full text-center text-gray-500">
             ¿Ya estás registrado?{" "}
             <Link
-              to="/login"
+              to="/iniciar-sesion"
               className="text-teal-600 hover:text-teal-900 hover:underline"
             >
               Inicia sesión

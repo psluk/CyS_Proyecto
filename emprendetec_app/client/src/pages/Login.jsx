@@ -49,7 +49,7 @@ export default function Login() {
               ¿No tenés cuenta?{" "}
               <Link
                 className="text-teal-600 hover:text-teal-900 hover:underline"
-                to={"/signup"}
+                to={"/registrarse"}
               >
                 Registrarse
               </Link>

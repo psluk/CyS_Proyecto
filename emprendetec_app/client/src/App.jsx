@@ -16,8 +16,8 @@ export default function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/iniciar-sesion" element={<Login />} />
+        <Route path="/registrarse" element={<SignUp />} />
       </Routes>
       <ToastContainer
         position="bottom-left"
