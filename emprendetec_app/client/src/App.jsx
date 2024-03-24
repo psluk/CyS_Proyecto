@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-// import SignUp from "./pages/SignUp";
+import SignUp from "./pages/SignUp";
 import Navbar from "./components/Navbar";
 import { Flip, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,7 +17,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        {/* <Route path="/signup" element={<SignUp />} /> */}
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
       <ToastContainer
         position="bottom-left"
