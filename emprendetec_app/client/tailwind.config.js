@@ -18,11 +18,13 @@ export default withMT({
     },
     extend: {
       screens: {
+        xs: "375px",
         sm: "540px",
         md: "720px",
         lg: "960px",
         xl: "1140px",
         "2xl": "1320px",
+        "max-xs": { max: "374px" },
         "max-sm": { max: "539px" },
         "max-md": { max: "719px" },
         "max-lg": { max: "959px" },
