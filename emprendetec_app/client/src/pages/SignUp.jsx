@@ -13,7 +13,9 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { defaultError } from "../utils/ErrorSettings";
 import {
+  emailRequirements,
   passwordRequirements,
+  validateEmail,
   validatePassword,
 } from "../../../common/utils/validations";
 import { useSession } from "../context/SessionContext";
@@ -31,6 +33,7 @@ export default function Signup() {
     useState(false);
   const [isEmailInvalid, setIsEmailInvalid] = useState(false);
   const [isPasswordInvalid, setIsPasswordInvalid] = useState(true);
+  const [checkEmail, setCheckEmail] = useState(false);
   const [checkPassword, setCheckPassword] = useState(false);
   const [checkPasswordConfirmation, setCheckPasswordConfirmation] =
     useState(false);
@@ -61,10 +64,21 @@ export default function Signup() {
     }
   }, [formData.password, formData.passwordConfirmation]);
 
+  useEffect(() => {
+    setIsEmailInvalid(!validateEmail(formData.email).isValid);
+  }, [formData.email]);
+
   // Function to handle the form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (isPasswordInvalid || isPasswordMismatch || isEmailInvalid) {
+      toast.error("Corregí los errores en el formulario y volvé a intentarlo");
+      return;
+    }
+
     setSubmitting(true);
+
     axios
       .post("/api/usuarios/registro", formData)
       .then(() => {
@@ -109,6 +123,7 @@ export default function Signup() {
             }
             className="!border-2"
             autoComplete="given-name"
+            value={formData.givenName}
           />
           <Input
             type="text"
@@ -121,20 +136,45 @@ export default function Signup() {
             }
             className="!border-2"
             autoComplete="family-name"
+            value={formData.familyName}
           />
         </div>
-        <Input
-          type="email"
-          label="Correo institucional"
-          color="teal"
-          size="lg"
-          required={true}
-          pattern=".+@(estudiantec\.cr|itcr\.ac\.cr|tec\.ac\.cr)"
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="!border-2"
-          autoComplete="email"
-          error={isEmailInvalid}
-        />
+        <div className="relative flex w-full flex-wrap">
+          <Input
+            type="email"
+            label="Correo institucional"
+            color="teal"
+            size="lg"
+            required={true}
+            pattern=".+@(estudiantec\.cr|itcr\.ac\.cr|tec\.ac\.cr)"
+            onChange={(e) => {
+              // If the email changes more than one character at once,
+              // it was probably autocompleted and will be checked
+              if (e.target.value.length - formData.email.length > 1) {
+                setCheckEmail(true);
+              }
+              setFormData({ ...formData, email: e.target.value });
+            }}
+            className="!border-2"
+            autoComplete="email"
+            error={checkEmail && isEmailInvalid}
+            onBlur={() => setCheckEmail(true)}
+          />
+          <ul className="w-full px-10 py-2">
+            {emailRequirements.map((requirement, index) => {
+              const isMet = requirement.validate(formData.email);
+              return (
+                <li key={index} className="text-sm">
+                  <FontAwesomeIcon
+                    icon={isMet ? faCheck : faXmark}
+                    className={`${isMet ? "text-green-700" : "text-red-500"} inline-block w-3 pe-2`}
+                  ></FontAwesomeIcon>
+                  {requirement.label}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
         <div className="relative flex w-full flex-wrap">
           <Input
             type={togglePassword ? "text" : "password"}
