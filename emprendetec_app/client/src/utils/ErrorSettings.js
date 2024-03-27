@@ -2,7 +2,7 @@ import { Flip } from "react-toastify";
 
 export const messageSettings = {
   position: "bottom-left",
-  autoClose: 3000,
+  autoClose: 5000,
   hideProgressBar: true,
   closeOnClick: true,
   pauseOnHover: true,
@@ -12,4 +12,4 @@ export const messageSettings = {
   transition: Flip,
 };
 
-export const defaultError = "Algo ha salido mal.";
+export const defaultError = "Ocurrió un error. Por favor, intentalo nuevamente.";
