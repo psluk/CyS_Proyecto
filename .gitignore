@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 .deployment
+
+# Secret keys
+emprendetec-7fe80-firebase-adminsdk.json
