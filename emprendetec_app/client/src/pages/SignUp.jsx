@@ -223,8 +223,9 @@ export default function Signup() {
             to="/iniciar-sesion"
             className="text-teal-600 hover:text-teal-900 hover:underline"
           >
-            Inicia sesión
+            Iniciá sesión
           </Link>
+          .
         </p>
       </form>
     </main>

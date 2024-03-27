@@ -7,13 +7,18 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useSession } from "../context/SessionContext";
 import { defaultError } from "../utils/ErrorSettings";
 import { toast } from "react-toastify";
+import ResetPasswordDialog from "../components/ResetPasswordDialog";
 
 export default function Login() {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
   const [togglePassword, setTogglePassword] = useState(false);
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const { login } = useSession();
+  const [showResetPasswordDialog, setShowResetPasswordDialog] = useState(false);
 
   // Function to handle the form submission
   const handleSubmit = (e) => {
@@ -103,32 +108,47 @@ export default function Login() {
           />
         </div>
 
-        <Button
-          color="teal"
-          size="lg"
-          className="w-full justify-center"
-          type="submit"
-          loading={submitting}
-          variant="gradient"
-        >
-          Iniciar sesión
-        </Button>
+        <div className="flex w-full flex-col gap-2">
+          <Button
+            color="teal"
+            size="lg"
+            className="w-full justify-center"
+            type="submit"
+            loading={submitting}
+            variant="gradient"
+          >
+            Iniciar sesión
+          </Button>
+
+          <Button
+            color="teal"
+            className="w-full justify-center"
+            type="button"
+            variant="text"
+            onClick={() => setShowResetPasswordDialog(true)}
+          >
+            Olvidé mi contraseña
+          </Button>
+        </div>
 
         <div className="w-full space-y-2 py-4">
-          <p className="w-full text-center font-medium hover:underline">
-            <Link>Olvidé mi contraseña</Link>
-          </p>
           <p className="w-full text-center text-gray-500">
             ¿No tenés cuenta?{" "}
             <Link
               className="text-teal-600 hover:text-teal-900 hover:underline"
-              to={"/registrarse"}
+              to="/registrarse"
             >
-              Registrarse
+              Registrate
             </Link>
+            .
           </p>
         </div>
       </form>
+      <ResetPasswordDialog
+        defaultEmail={formData.email}
+        open={showResetPasswordDialog}
+        handler={() => setShowResetPasswordDialog(false)}
+      />
     </main>
   );
 }
