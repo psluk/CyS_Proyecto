@@ -39,7 +39,7 @@ export default function Home() {
         <title>Prueba | EmprendeTEC</title>
         <link rel="canonical" href="/" />
       </Helmet>
-      <main className="w-full max-w-7xl p-10">
+      <main className="w-full max-w-7xl px-10">
         <span className="text-deep-orange-600">
           <FontAwesomeIcon
             icon={faNetworkWired}

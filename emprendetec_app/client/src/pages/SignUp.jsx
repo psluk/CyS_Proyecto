@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input, Button } from "@material-tailwind/react";
 import {
   faCheck,
@@ -16,6 +16,7 @@ import {
   passwordRequirements,
   validatePassword,
 } from "../../../common/utils/validations";
+import { useSession } from "../context/SessionContext";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -35,6 +36,9 @@ export default function Signup() {
     useState(false);
   const [isPasswordMismatch, setIsPasswordMismatch] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const { login } = useSession();
+
+  const navigate = useNavigate();
 
   // Function to handle the change of the password and confirm password inputs
   const handlePasswordChange = (e) => {
@@ -65,6 +69,16 @@ export default function Signup() {
       .post("/api/usuarios/registro", formData)
       .then(() => {
         toast.success("¡Usuario registrado exitosamente!");
+        try {
+          login(formData.email, formData.password).then(() => {
+            navigate("/");
+          });
+        } catch (error) {
+          toast.error(
+            "No se pudo iniciar sesión automáticamente. Por favor, iniciá sesión manualmente.",
+          );
+          navigate("/iniciar-sesion");
+        }
       })
       .catch((error) => {
         toast.error(error?.response?.data?.message ?? defaultError);
@@ -78,7 +92,7 @@ export default function Signup() {
   };
 
   return (
-    <main className="w-full max-w-7xl space-y-16 p-10">
+    <main className="w-full max-w-7xl space-y-16 px-10">
       <h1 className="text-center font-sans text-2xl font-bold text-teal-900 sm:text-3xl lg:text-5xl">
         Registrarse
       </h1>

@@ -7,13 +7,18 @@ import { Flip, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./ToastifyOverride.css";
 import { ThemeProvider } from "@material-tailwind/react";
+import { useSession } from "./context/SessionContext";
+import LoaderDialog from "./components/LoaderDialog";
+import VerifyEmail from "./components/VerifyEmail";
 
 export default function App() {
   const emprendeTecTheme = {};
+  const { loading } = useSession();
 
   return (
     <ThemeProvider value={emprendeTecTheme}>
       <Navbar />
+      <VerifyEmail />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/iniciar-sesion" element={<Login />} />
@@ -31,6 +36,7 @@ export default function App() {
         theme="light"
         transition={Flip}
       />
+      <LoaderDialog open={loading} />
     </ThemeProvider>
   );
 }
