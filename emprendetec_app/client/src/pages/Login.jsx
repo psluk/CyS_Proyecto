@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input, Button } from "@material-tailwind/react";
 import { useState } from "react";
@@ -8,6 +8,7 @@ import { useSession } from "../context/SessionContext";
 import { defaultError } from "../utils/ErrorSettings";
 import { toast } from "react-toastify";
 import ResetPasswordDialog from "../components/ResetPasswordDialog";
+import { ConfirmEmailVerification } from "../components/VerifyEmail";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -17,8 +18,13 @@ export default function Login() {
   const [togglePassword, setTogglePassword] = useState(false);
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
-  const { login } = useSession();
+  const { loading, login, user } = useSession();
   const [showResetPasswordDialog, setShowResetPasswordDialog] = useState(false);
+  const [showEmailConfirmationDialog, setShowEmailConfirmationDialog] =
+    useState(false);
+  const searchParams = new URLSearchParams(window.location.search);
+
+  const oobCode = searchParams.get("oobCode");
 
   // Function to handle the form submission
   const handleSubmit = (e) => {
@@ -69,6 +75,42 @@ export default function Login() {
         setSubmitting(false);
       });
   };
+
+  useEffect(() => {
+    if (loading) {
+      let mode = searchParams.get("mode");
+      const isLoggedIn = user !== null;
+      let redirect = true;
+
+      switch (mode) {
+        case "verifyEmail":
+          if (isLoggedIn) {
+            setShowEmailConfirmationDialog(true);
+            redirect = false;
+          } else {
+            toast.error(
+              "No se pudo verificar el correo electrónico. Iniciá sesión y volvé a intentarlo.",
+            );
+          }
+          break;
+
+        case undefined:
+          break;
+
+        case null:
+          break;
+
+        default:
+          toast.error("El enlace no es válido.");
+          break;
+      }
+
+      if (isLoggedIn && redirect) {
+        // If the user is already logged in, redirect to the home page
+        navigate("/");
+      }
+    }
+  }, [loading]);
 
   return (
     <main className="w-full max-w-7xl space-y-16 px-10">
@@ -148,6 +190,13 @@ export default function Login() {
         defaultEmail={formData.email}
         open={showResetPasswordDialog}
         handler={() => setShowResetPasswordDialog(false)}
+      />
+      <ConfirmEmailVerification
+        oobCode={oobCode}
+        open={showEmailConfirmationDialog}
+        handler={() => {
+          setShowEmailConfirmationDialog(false);
+        }}
       />
     </main>
   );

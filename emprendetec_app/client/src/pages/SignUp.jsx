@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input, Button } from "@material-tailwind/react";
 import {
@@ -19,6 +19,7 @@ import {
   validatePassword,
 } from "../../../common/utils/validations";
 import { useSession } from "../context/SessionContext";
+import { sendVerificationLink } from "../components/VerifyEmail";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -85,6 +86,7 @@ export default function Signup() {
         toast.success("¡Usuario registrado exitosamente!");
         try {
           login(formData.email, formData.password).then(() => {
+            sendVerificationLink(true);
             navigate("/");
           });
         } catch (error) {

@@ -46,6 +46,7 @@ const SessionProvider = ({ children }) => {
   };
 
   const login = (email, password) => {
+    setLoading(true);
     const auth = getAuth();
     return signInWithEmailAndPassword(auth, email, password);
   };
@@ -75,10 +76,6 @@ const SessionProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, updateUser);
     return () => unsubscribe();
   }, []);
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
 
   return (
     <SessionContext.Provider value={{

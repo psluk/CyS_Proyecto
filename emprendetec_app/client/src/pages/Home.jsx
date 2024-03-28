@@ -10,6 +10,7 @@ import { faNetworkWired } from "@fortawesome/free-solid-svg-icons";
 export default function Home() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const searchParams = new URLSearchParams(window.location.search);
 
   const handleFetchData = async (showError = false) => {
     try {
@@ -32,6 +33,12 @@ export default function Home() {
       setLoading(false);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (searchParams.has("showEmailVerificationSuccess")) {
+      toast.success("Correo electrónico verificado correctamente.");
+    }
+  }, [searchParams]);
 
   return (
     <>
