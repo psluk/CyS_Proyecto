@@ -7,20 +7,32 @@ import {
   Input,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { toast } from "react-toastify";
+import { defaultError } from "../utils/ErrorSettings";
 
 export default function ResetPasswordDialog({ defaultEmail, open, handler }) {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const auth = getAuth();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitting(true);
 
-    // Send the password reset email
-    console.log(email);
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        toast.success("Se ha enviado un enlace de recuperación a su correo.");
+      })
+      .catch((error) => {
+        // const errorCode = error.code;
+        // const errorMessage = error.message;
+        toast.error(defaultError);
+      });
 
     //formRef.current?.reset();
     setSubmitting(false);
+    handler();
   };
 
   useEffect(() => {
