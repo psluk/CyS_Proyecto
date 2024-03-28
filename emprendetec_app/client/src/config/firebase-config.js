@@ -14,4 +14,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+if (
+  process.env.NODE_ENV !== "development" &&
+  window.location.hostname !== "localhost"
+) {
+  getAnalytics(app);
+}
