@@ -20,6 +20,7 @@ import {
 } from "../../../common/utils/validations";
 import { useSession } from "../context/SessionContext";
 import { sendVerificationLink } from "../components/VerifyEmail";
+import { Helmet } from "react-helmet-async";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -117,6 +118,15 @@ export default function Signup() {
   };
 
   return (
+    <>
+    <Helmet>
+      <title>Registrarse | Emprendetec</title>
+      <link rel="canonical" href="/registrarse" />
+      <meta
+        name="description"
+        content="Regístrate en la plataforma de Emprendetec para acceder a los recursos y servicios disponibles."
+      />
+    </Helmet>
     <main className="w-full max-w-7xl space-y-16 px-10">
       <h1 className="text-center font-sans text-2xl font-bold text-teal-900 sm:text-3xl lg:text-5xl">
         Registrarse
@@ -280,5 +290,6 @@ export default function Signup() {
         </p>
       </form>
     </main>
+    </>
   );
 }
