@@ -19,7 +19,11 @@ const SessionProvider = ({ children }) => {
   const [loading, setLoading] = useState(INITIAL_STATE !== null);
 
   useEffect(() => {
-    localStorage.setItem("session", JSON.stringify(user));
+    if (user) {
+      localStorage.setItem("session", true);
+    } else {
+      localStorage.removeItem("session");
+    }
   }, [user]);
 
   const getUserType = () => {
