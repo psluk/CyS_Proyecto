@@ -77,7 +77,7 @@ export default function Login() {
   };
 
   useEffect(() => {
-    if (loading) {
+    if (!loading) {
       let mode = searchParams.get("mode");
       const isLoggedIn = user !== null;
       let redirect = true;

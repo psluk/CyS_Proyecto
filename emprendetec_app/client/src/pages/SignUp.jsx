@@ -40,7 +40,7 @@ export default function Signup() {
     useState(false);
   const [isPasswordMismatch, setIsPasswordMismatch] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const { login } = useSession();
+  const { loading, login, user } = useSession();
 
   const navigate = useNavigate();
 
@@ -68,6 +68,15 @@ export default function Signup() {
   useEffect(() => {
     setIsEmailInvalid(!validateEmail(formData.email).isValid);
   }, [formData.email]);
+
+  useEffect(() => {
+    if (!loading) {
+      if (user) {
+        // If the user is already logged in, redirect to the home page
+        navigate("/");
+      }
+    }
+  }, [loading]);
 
   // Function to handle the form submission
   const handleSubmit = (e) => {
