@@ -9,6 +9,7 @@ import { defaultError } from "../utils/ErrorSettings";
 import { toast } from "react-toastify";
 import ResetPasswordDialog from "../components/ResetPasswordDialog";
 import { ConfirmEmailVerification } from "../components/VerifyEmail";
+import NewPasswordDialog from "../components/NewPasswordDialog";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ export default function Login() {
   const [showResetPasswordDialog, setShowResetPasswordDialog] = useState(false);
   const [showEmailConfirmationDialog, setShowEmailConfirmationDialog] =
     useState(false);
+  const [showNewPasswordDialog, setShowNewPasswordDialog] = useState(false);
   const searchParams = new URLSearchParams(window.location.search);
 
   const oobCode = searchParams.get("oobCode");
@@ -94,9 +96,10 @@ export default function Login() {
           }
           break;
 
-        case undefined:
+        case "resetPassword":
+          setShowNewPasswordDialog(true);
+          redirect = false;
           break;
-
         case null:
           break;
 
@@ -197,6 +200,11 @@ export default function Login() {
         handler={() => {
           setShowEmailConfirmationDialog(false);
         }}
+      />
+      <NewPasswordDialog
+        oobCode={oobCode}
+        open={showNewPasswordDialog}
+        handler={() => setShowNewPasswordDialog(false)}
       />
     </main>
   );
