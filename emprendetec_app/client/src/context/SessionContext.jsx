@@ -1,6 +1,11 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 
 const INITIAL_STATE = JSON.parse(localStorage.getItem("session")) || null;
 
@@ -52,7 +57,16 @@ const SessionProvider = ({ children }) => {
   const login = (email, password) => {
     setLoading(true);
     const auth = getAuth();
-    return signInWithEmailAndPassword(auth, email, password);
+    return new Promise((resolve, reject) => {
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          resolve(userCredential);
+        })
+        .catch((error) => {
+          reject(error);
+          setLoading(false);
+        });
+    });
   };
 
   const logout = () => {
@@ -82,17 +96,21 @@ const SessionProvider = ({ children }) => {
   }, []);
 
   return (
-    <SessionContext.Provider value={{
-      user,
-      loading,
-      getUserType,
-      getUserEmail,
-      getUserName,
-      isUserType,
-      isEmailVerified,
-      login,
-      logout,
-    }}>{children}</SessionContext.Provider>
+    <SessionContext.Provider
+      value={{
+        user,
+        loading,
+        getUserType,
+        getUserEmail,
+        getUserName,
+        isUserType,
+        isEmailVerified,
+        login,
+        logout,
+      }}
+    >
+      {children}
+    </SessionContext.Provider>
   );
 };
 
