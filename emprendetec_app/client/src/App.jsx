@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import AdministratorPanel from "./pages/AdministratorPanel";
+import UsersManagement from "./pages/UsersManagement";
 import Navbar from "./components/Navbar";
 import { Flip, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -23,6 +25,8 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/iniciar-sesion" element={<Login />} />
         <Route path="/registrarse" element={<SignUp />} />
+        <Route path="/administrar" element={<AdministratorPanel />} />
+        <Route path="/GestionUsuarios" element={<UsersManagement />} />
       </Routes>
       <ToastContainer
         position="bottom-left"
