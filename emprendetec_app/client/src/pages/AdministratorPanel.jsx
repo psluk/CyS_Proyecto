@@ -12,7 +12,7 @@ export default function AdministratorPanel() {
         <div className="grid grid-cols-1 gap-4 left">
         <div className="rounded-md bg-white p-4 ">
             <Link
-              to="/"
+              to="/GestionUsuarios"
               className="text-xl font-bold text-black ml-8"
             >
               Administrar Usuarios
