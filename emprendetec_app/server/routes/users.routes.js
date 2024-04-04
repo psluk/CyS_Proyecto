@@ -7,6 +7,8 @@ import {
   validatePassword,
 } from "../../common/utils/validations.js";
 import { runStoredProcedure } from "../config/database/database-provider.js";
+import admin from "firebase-admin"; // Importa firebase-admin
+
 
 // POST /api/usuarios
 // Creates a new user when the user signs up
@@ -92,5 +94,68 @@ router.post("/registro", async (req, res) => {
       res.status(message ? 400 : 500).json({ message: message });
     });
 });
+
+
+router.get("/detalles", async (req, res) => {
+  try {
+    // Ejecutar el procedimiento almacenado para obtener los detalles de todos los usuarios
+    const result = await runStoredProcedure("GetUserDetails");
+
+    // Verificar si se encontraron datos de usuario
+    if (result.length === 0) {
+      return res.status(404).json({ message: "No se encontraron detalles de ningún usuario." });
+    }
+
+    // Devolver los detalles de todos los usuarios en la respuesta
+    res.json({ users: result });
+  } catch (error) {
+    console.error('Error al obtener detalles de los usuarios:', error);
+    res.status(500).json({ message: "Ocurrió un error al obtener detalles de los usuarios." });
+  }
+});
+
+// router.delete("/eliminar/:email", async (req, res) => { 
+//   const { email } = req.params;
+//   console.log(email);
+// });
+
+// Elimina un usuario por su correo electrónico
+router.delete("/eliminar/:email", async (req, res) => {
+  const { email } = req.params;
+  console.log(email);
+  try {
+    
+    // Eliminar usuario de la base de datos local
+    const result = await runStoredProcedure("EliminarUsuarios", { IN_email: email});
+
+    // Verificar el resultado del procedimiento almacenado
+    if (result === 1) {
+      res.json({ message: "Usuario eliminado exitosamente." });
+    } else if (result === -1) {
+      res.status(404).json({ message: "El usuario no existe en la base de datos local." });
+    } else if (result === -2) {
+      res.status(500).json({ message: "Error interno del servidor al eliminar el usuario." });
+    } else {
+      res.status(500).json({ message: "Resultado inesperado del procedimiento almacenado." });
+    }
+    console.log("Resultado del procedimiento almacenado:", result);
+    // Eliminar usuario de Firebase Authentication
+    await firebaseProvider.auth().getUserByEmail(email)
+      .then(async (userRecord) => {
+        await firebaseProvider.auth().deleteUser(userRecord.uid);
+      })
+      .catch((error) => {
+        console.error('Error al eliminar usuario de Firebase:', error);
+        res.status(404).json({ message: "El usuario no existe." });
+        return;
+      });
+
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
+});
+
+
 
 export default router;
