@@ -13,13 +13,15 @@ export default function UsersManagement() {
 
   useEffect(() => {
     fetchUserDetails();
-  }, []);
+  }, [userDetailsList]);
 
   const fetchUserDetails = async () => {
     try {
+      console.log("Obteniendo detalles de usuarios...");
       const response = await axios.get("/api/usuarios/detalles");
       if (response.data && response.data.users) {
         setUserDetailsList(response.data.users);
+        console.log("Detalles de usuarios:",userDetailsList);
       }
     } catch (error) {
       console.error("Error al obtener los detalles de los usuarios:", error);
