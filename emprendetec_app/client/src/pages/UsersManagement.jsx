@@ -9,7 +9,8 @@ export default function UsersManagement() {
   const [userDetailsList, setUserDetailsList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortField, setSortField] = useState(""); 
-  const [sortOrder, setSortOrder] = useState("asc"); 
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
   useEffect(() => {
     fetchUserDetails();
@@ -21,7 +22,7 @@ export default function UsersManagement() {
       const response = await axios.get("/api/usuarios/detalles");
       if (response.data && response.data.users) {
         setUserDetailsList(response.data.users);
-        console.log("Detalles de usuarios:",userDetailsList);
+        console.log("Detalles de usuarios:", userDetailsList);
       }
     } catch (error) {
       console.error("Error al obtener los detalles de los usuarios:", error);
@@ -51,10 +52,20 @@ export default function UsersManagement() {
 
   const sortedUserDetailsList = userDetailsList.slice().sort(compareValues);
 
-  // Función para eliminar un usuario
-  const handleDeleteUser = async (email) => { 
+  const handleUserSelect = (email) => {
+    const selectedIndex = selectedUsers.indexOf(email);
+    if (selectedIndex === -1) {
+      setSelectedUsers([...selectedUsers, email]);
+    } else {
+      setSelectedUsers(selectedUsers.filter((user) => user !== email));
+    }
+  };
+
+  const handleDeleteUser = async (emails) => { 
     try {
-      await axios.delete(`/api/usuarios/eliminar/${email}`); // Llamamos a la API para eliminar el usuario
+      await Promise.all(emails.map(async (email) => {
+        await axios.delete(`/api/usuarios/eliminar/${email}`);
+      }));
       // Actualizar la lista de usuarios después de eliminar
       await fetchUserDetails();
     } catch (error) {
@@ -85,7 +96,10 @@ export default function UsersManagement() {
               <div className="col-span-1">
                 <button onClick={() => handleSort("Score")}>Puntuación</button>
               </div>
-              <Button color="red" className="col-span-1">
+              <Button color="red" className="col-span-1" onClick={() => {
+                console.log("Usuarios seleccionados:", selectedUsers);                
+                handleDeleteUser(selectedUsers);
+              }}>
                 Eliminar seleccionados
               </Button>
             </div>
@@ -97,7 +111,8 @@ export default function UsersManagement() {
                   className="grid auto-rows-max grid-cols-7 items-center py-4 justify-items-center"
                 >
                   <Checkbox
-                    defaultChecked
+                    checked={selectedUsers.includes(user.Email)}
+                    onChange={() => handleUserSelect(user.Email)}
                     id="ripple-on"
                     ripple={true}
                     className="col-span-1"
@@ -114,8 +129,8 @@ export default function UsersManagement() {
                   <div className="col-span-1">{user.Email}</div>
                   <Button color="red" className="col-span-1" onClick={() => {
                     console.log("Eliminar usuario:", user.Email);                
-                    handleDeleteUser(user.Email);
-                    }}> {/* Pasamos el email */}
+                    handleDeleteUser([user.Email]);
+                    }}>
                     Eliminar
                   </Button>
                 </div>
