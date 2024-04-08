@@ -28,6 +28,11 @@ export default function Navbar() {
       userTypes: ["Administrator"],
     },
     {
+      label: "Mi Perfil",
+      path: "/perfil",
+      userTypes: ["Administrator", "Professor", "Student"],
+    },
+    {
       component: (
         <Button variant="gradient" color="blue">
           Iniciar sesión
