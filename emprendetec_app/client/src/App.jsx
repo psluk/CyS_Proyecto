@@ -6,6 +6,7 @@ import AdministratorPanel from "./pages/AdministratorPanel";
 import UsersManagement from "./pages/UsersManagement";
 //import Perfil from "./pages/Perfil";
 import Emprendimientos from "./pages/Emprendimientos";
+import DetallesPost from "./pages/DetallesEmprendimiento";
 import Navbar from "./components/Navbar";
 import { Flip, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -30,7 +31,8 @@ export default function App() {
         <Route path="/administrar" element={<AdministratorPanel />} />
         <Route path="/GestionUsuarios" element={<UsersManagement />} />
         {/* <Route path="/Perfil" element={<Perfil />} /> */}
-        <Route path="/Emprendimientos" element={<Emprendimientos />} />
+        <Route path="/emprendimientos" element={<Emprendimientos />} />
+        <Route path="/emprendimientos/:id" element={<DetallesPost />} />
       </Routes>
       <ToastContainer
         position="bottom-left"

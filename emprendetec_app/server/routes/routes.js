@@ -1,6 +1,6 @@
 import sessionRouter from "./sessions.routes.js";
 import userRouter from "./users.routes.js";
-import postRouter from "./post.routes.js";
+import postRouter from "./posts.routes.js";
 
 const setupRoutes = (app) => {
   app.use("/api/sesiones", sessionRouter);
