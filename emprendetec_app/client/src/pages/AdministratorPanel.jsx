@@ -1,33 +1,32 @@
 import { Helmet } from "react-helmet-async";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 export default function AdministratorPanel() {
   return (
     <>
       <Helmet>
-        <title>Prueba | EmprendeTEC</title>
+        <title>Panel de adminstración | EmprendeTEC</title>
         <link rel="canonical" href="/administar" />
       </Helmet>
-      <div className="flex min-h-screen w-2/3 flex-col items-start justify-start bg-gray-100 p-8">
-        <h1 className="mb-8 text-4xl font-bold text-teal-700">Administrar</h1>
-        <div className="grid grid-cols-1 gap-4 left">
-        <div className="rounded-md bg-white p-4 ">
+      <main className="w-full max-w-7xl space-y-16 px-10">
+        <h1 className="text-center font-sans text-2xl font-bold text-teal-900 sm:text-3xl lg:text-5xl">
+          Menú de administración
+        </h1>
+        <div className="left grid grid-cols-1 gap-4">
+          <div className="rounded-md bg-teal-600 p-4 ">
             <Link
               to="/GestionUsuarios"
-              className="text-xl font-bold text-black ml-8"
+              className="ml-8 text-xl font-bold text-white"
             >
               Administrar Usuarios
             </Link>
           </div>
-          <div className="rounded-md bg-white p-4">
-            <Link
-              to="/"
-              className="text-xl font-bold text-black ml-8"
-            >
+          <div className="rounded-md bg-teal-600 p-4">
+            <Link to="/" className="ml-8 text-xl font-bold text-white">
               Administrar Emprendimientos
             </Link>
           </div>
         </div>
-      </div>
+      </main>
     </>
   );
 }

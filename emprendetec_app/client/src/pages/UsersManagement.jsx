@@ -8,18 +8,21 @@ import { Checkbox } from "@material-tailwind/react";
 export default function UsersManagement() {
   const [userDetailsList, setUserDetailsList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sortField, setSortField] = useState(""); 
-  const [sortOrder, setSortOrder] = useState("asc"); 
+  const [sortField, setSortField] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
   useEffect(() => {
     fetchUserDetails();
-  }, []);
+  }, [userDetailsList]);
 
   const fetchUserDetails = async () => {
     try {
+      console.log("Obteniendo detalles de usuarios...");
       const response = await axios.get("/api/usuarios/detalles");
       if (response.data && response.data.users) {
         setUserDetailsList(response.data.users);
+        console.log("Detalles de usuarios:", userDetailsList);
       }
     } catch (error) {
       console.error("Error al obtener los detalles de los usuarios:", error);
@@ -49,10 +52,22 @@ export default function UsersManagement() {
 
   const sortedUserDetailsList = userDetailsList.slice().sort(compareValues);
 
-  // Función para eliminar un usuario
-  const handleDeleteUser = async (email) => { 
+  const handleUserSelect = (email) => {
+    const selectedIndex = selectedUsers.indexOf(email);
+    if (selectedIndex === -1) {
+      setSelectedUsers([...selectedUsers, email]);
+    } else {
+      setSelectedUsers(selectedUsers.filter((user) => user !== email));
+    }
+  };
+
+  const handleDeleteUser = async (emails) => {
     try {
-      await axios.delete(`/api/usuarios/eliminar/${email}`); // Llamamos a la API para eliminar el usuario
+      await Promise.all(
+        emails.map(async (email) => {
+          await axios.delete(`/api/usuarios/eliminar/${email}`);
+        }),
+      );
       // Actualizar la lista de usuarios después de eliminar
       await fetchUserDetails();
     } catch (error) {
@@ -63,27 +78,41 @@ export default function UsersManagement() {
   return (
     <>
       <Helmet>
-        <title>Prueba | EmprendeTEC</title>
+        <title>Administración usuarios | EmprendeTEC</title>
         <link rel="canonical" href="/GestionUsuarios" />
       </Helmet>
-      <div className="container mx-auto px-4">
+      <main className="w-full max-w-7xl space-y-16 overflow-auto px-10">
+        <h1 className="text-center font-sans text-2xl font-bold text-teal-900 sm:text-3xl lg:text-5xl">
+          Administración de usuarios
+        </h1>
         {loading ? (
           <div>Cargando...</div>
         ) : userDetailsList.length > 0 ? (
-          <div>
-            <div className="grid auto-rows-max grid-cols-7 items-center py-4 justify-items-center">
+          <div className=" py-4">
+            <div className="grid auto-rows-max grid-cols-7 items-center justify-items-center ">
               <div className="col-span-1">Checkbox</div>
               <div className="col-span-1">Avatar</div>
               <div className="col-span-2">
-                <button onClick={() => handleSort("FullName")}>Nombre Completo</button>
+                <button onClick={() => handleSort("FullName")}>
+                  Nombre Completo
+                </button>
               </div>
               <div className="col-span-1">
-                <button onClick={() => handleSort("RegistrationDate")}>Fecha de Registro</button>
+                <button onClick={() => handleSort("RegistrationDate")}>
+                  Fecha de Registro
+                </button>
               </div>
               <div className="col-span-1">
                 <button onClick={() => handleSort("Score")}>Puntuación</button>
               </div>
-              <Button color="red" className="col-span-1">
+              <Button
+                color="red"
+                className="col-span-1"
+                onClick={() => {
+                  console.log("Usuarios seleccionados:", selectedUsers);
+                  handleDeleteUser(selectedUsers);
+                }}
+              >
                 Eliminar seleccionados
               </Button>
             </div>
@@ -92,10 +121,11 @@ export default function UsersManagement() {
               {sortedUserDetailsList.map((user, index) => (
                 <div
                   key={index}
-                  className="grid auto-rows-max grid-cols-7 items-center py-4 justify-items-center"
+                  className="grid auto-rows-max grid-cols-7 items-center justify-items-center py-4"
                 >
                   <Checkbox
-                    defaultChecked
+                    checked={selectedUsers.includes(user.Email)}
+                    onChange={() => handleUserSelect(user.Email)}
                     id="ripple-on"
                     ripple={true}
                     className="col-span-1"
@@ -110,10 +140,14 @@ export default function UsersManagement() {
                     {new Date(user.RegistrationDate).toLocaleDateString()}
                   </div>
                   <div className="col-span-1">{user.Email}</div>
-                  <Button color="red" className="col-span-1" onClick={() => {
-                    console.log("Eliminar usuario:", user.Email);                
-                    handleDeleteUser(user.Email);
-                    }}> {/* Pasamos el email */}
+                  <Button
+                    color="red"
+                    className="col-span-1"
+                    onClick={() => {
+                      console.log("Eliminar usuario:", user.Email);
+                      handleDeleteUser([user.Email]);
+                    }}
+                  >
                     Eliminar
                   </Button>
                 </div>
@@ -123,7 +157,7 @@ export default function UsersManagement() {
         ) : (
           <div>No se encontraron detalles de usuarios.</div>
         )}
-      </div>
+      </main>
     </>
   );
 }
