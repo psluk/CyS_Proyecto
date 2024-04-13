@@ -20,7 +20,7 @@ export default function DetallesPost() {
             if (response.data && response.data.post) {
                 console.log("Se obtuvo el emprendimeinto")
                 console.log(response.data.post.Title)
-                setPost(response.data.post);
+                setPost(response.data.post[0]);
                 //setX(1);
             }
         } catch (error) {
