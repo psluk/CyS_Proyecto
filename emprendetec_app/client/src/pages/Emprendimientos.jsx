@@ -45,7 +45,7 @@ export default function Emprendimientos() {
                   <div className="flex items-center justify-between">
                     <h2 className="text-gray-600">{post.FullName}</h2>
                     <span className="text-gray-500 flex items-center">
-                      <img src="../../public/iconos/star.png" className="w-6 h-6 mr-1" />
+                      <img src="/iconos/star.png" className="w-6 h-6 mr-1" />
                       {post.Score}
                     </span>
                   </div>
