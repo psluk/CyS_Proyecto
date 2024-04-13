@@ -58,7 +58,7 @@ export default function Emprendimientos() {
         </div>
         
         {/* FILTRAR */}
-        {/* <div className="p-8 bg-gray-300 rounded ml-10">
+        <div className="p-8 bg-gray-300 rounded ml-10">
           <div className="w-full mb-8">
             <div >
               <h2 className="text-2xl font-bold text-teal-600">Filtrar</h2>
@@ -75,6 +75,7 @@ export default function Emprendimientos() {
                   <label htmlFor="end-date" className="block text-gray-700 font-medium">Fecha de fin:</label>
                   <input
                     type="date"
+                    
                     id="end-date"
                     className="border rounded-md px-3 py-2 w-full"
                   />
@@ -90,7 +91,7 @@ export default function Emprendimientos() {
               </div>
             </div>
           </div>
-        </div> */}
+        </div>
 
       </div>
     </>
