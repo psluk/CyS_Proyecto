@@ -18,11 +18,9 @@ export default function UsersManagement() {
 
   const fetchUserDetails = async () => {
     try {
-      console.log("Obteniendo detalles de usuarios...");
       const response = await axios.get("/api/usuarios/detalles");
       if (response.data && response.data.users) {
         setUserDetailsList(response.data.users);
-        console.log("Detalles de usuarios:", userDetailsList);
       }
     } catch (error) {
       console.error("Error al obtener los detalles de los usuarios:", error);
@@ -68,7 +66,6 @@ export default function UsersManagement() {
           await axios.delete(`/api/usuarios/eliminar/${email}`);
         }),
       );
-      // Actualizar la lista de usuarios después de eliminar
       await fetchUserDetails();
     } catch (error) {
       console.error("Error al eliminar usuario:", error);
@@ -79,7 +76,7 @@ export default function UsersManagement() {
     <>
       <Helmet>
         <title>Administración usuarios | EmprendeTEC</title>
-        <link rel="canonical" href="/GestionUsuarios" />
+        <link rel="canonical" href="/administrar/usuario" />
       </Helmet>
       <main className="w-full max-w-7xl space-y-16 overflow-auto px-10">
         <h1 className="text-center font-sans text-2xl font-bold text-teal-900 sm:text-3xl lg:text-5xl">

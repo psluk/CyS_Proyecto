@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import AdministratorPanel from "./pages/AdministratorPanel";
 import UsersManagement from "./pages/UsersManagement";
+import CreateEntrepreneurship from "./pages/CreateEntrepreneurship";
 //import Perfil from "./pages/Perfil";
 import Emprendimientos from "./pages/Emprendimientos";
 import DetallesPost from "./pages/DetallesEmprendimiento";
@@ -29,7 +30,8 @@ export default function App() {
         <Route path="/iniciar-sesion" element={<Login />} />
         <Route path="/registrarse" element={<SignUp />} />
         <Route path="/administrar" element={<AdministratorPanel />} />
-        <Route path="/GestionUsuarios" element={<UsersManagement />} />
+        <Route path="/administrar/usuarios" element={<UsersManagement />} />
+        <Route path="/emprendimientos/crear" element={<CreateEntrepreneurship />} />
         {/* <Route path="/Perfil" element={<Perfil />} /> */}
         <Route path="/emprendimientos" element={<Emprendimientos />} />
         <Route path="/emprendimientos/:id" element={<DetallesPost />} />
