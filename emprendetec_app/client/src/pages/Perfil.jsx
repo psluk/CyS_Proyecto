@@ -11,12 +11,12 @@ export default function Perfil() {
         <div className="w-full gap-4 left flex">
         
           <div className="flex w-1/2">
-            <img src={"../../public/iconos/perfil.png"} className="size-28 rounded-2xl" />
+            <img src="/iconos/perfil.png" className="size-28 rounded-2xl" />
             <div className="ml-4">
               <h2 className="text-2xl font-bold text-teal-600">Juan Pérez Rodríguez</h2>
               <p className="text-gray-500">Ingeniería en Computación</p>
               <div className="flex items-center text-gray-500 mt-8">
-                <img src={"../../public/iconos/star.png"} className="size-6"></img>
+                <img src="/iconos/star.png" className="size-6"></img>
                 <span className="ml-1">4.5</span>
               </div>
             </div>

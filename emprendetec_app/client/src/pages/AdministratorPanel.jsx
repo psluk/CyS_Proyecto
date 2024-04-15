@@ -14,14 +14,14 @@ export default function AdministratorPanel() {
         <div className="left grid grid-cols-1 gap-4">
           <div className="rounded-md bg-teal-600 p-4 ">
             <Link
-              to="/GestionUsuarios"
+              to="/administrar/usuarios"
               className="ml-8 text-xl font-bold text-white"
             >
               Administrar Usuarios
             </Link>
           </div>
           <div className="rounded-md bg-teal-600 p-4">
-            <Link to="/" className="ml-8 text-xl font-bold text-white">
+            <Link to="/emprendimientos/crear" className="ml-8 text-xl font-bold text-white">
               Administrar Emprendimientos
             </Link>
           </div>

@@ -46,37 +46,7 @@ export default function Home() {
         <title>Prueba | EmprendeTEC</title>
         <link rel="canonical" href="/" />
       </Helmet>
-      <main className="w-full max-w-7xl px-10">
-        <span className="text-deep-orange-600">
-          <FontAwesomeIcon
-            icon={faNetworkWired}
-            className="inline-block pe-2"
-          />
-          Example icon
-        </span>
-        <p className="italic">Example response from server:</p>
-        {data ? (
-          <pre>{JSON.stringify(data, null, 2)}</pre>
-        ) : (
-          <Button
-            className="mb-2 w-40"
-            color="teal"
-            onClick={() => handleFetchData(false)}
-            loading={loading}
-          >
-            Fetch Data
-          </Button>
-        )}
-        <Button
-          className="mb-2 w-40"
-          color="pink"
-          onClick={() => handleFetchData(true)}
-          loading={loading}
-        >
-          Show Error
-        </Button>
-        <Input type="text" label="Test input" color="teal" />
-      </main>
+      <main className="w-full max-w-7xl px-10"></main>
     </>
   );
 }

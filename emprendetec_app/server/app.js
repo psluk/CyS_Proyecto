@@ -8,7 +8,7 @@ import setupRoutes from "./routes/routes.js";
 // CLIENT FILES
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const CLIENT_FILES = path.join(__dirname, "../client/");
+const CLIENT_FILES = path.join(__dirname, "../client/dist/");
 
 // PORT
 const PORT = process.env.PORT || 1234; // Azure will use process.env.PORT
