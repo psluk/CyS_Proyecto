@@ -16,6 +16,8 @@ export default function CreateEntrepreneurship() {
     images: [],
   });
 
+  const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+  const MAX_IMAGE_COUNT = 5;
   const [activeImage, setActiveImage] = useState(
     "https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
   );
@@ -30,6 +32,23 @@ export default function CreateEntrepreneurship() {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
+    // Verificar el número de imágenes seleccionadas
+  if (files.length > MAX_IMAGE_COUNT) {
+    alert("No puedes seleccionar más de 5 imágenes");
+    return;
+  }
+
+  // Verificar los formatos y tamaños de las imágenes
+  files.forEach((file) => {
+    if (!file.type.startsWith('image/')) {
+      alert("Solo se permiten imágenes en formato JPEG o PNG");
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE) {
+      alert(`La imagen "${file.name}" es demasiado grande. Debe ser menor a 5MB`);
+      return;
+    }
+  });
     const images = files.map((file) => ({
       file,
       url: URL.createObjectURL(file),
@@ -61,50 +80,51 @@ export default function CreateEntrepreneurship() {
   };
 
   return (
-    <div className="flex-col min-h-screen w-full items-start justify-start bg-white p-32">
+    <div className="min-h-screen w-full flex-col items-start justify-start bg-white p-2 md:p-2 lg:p-32">
       <Helmet>
         <title>Panel de adminstración | EmprendeTEC</title>
         <link rel="canonical" href="/emprendimientos/crear" />
       </Helmet>
       <>
-        <div className="grid gap-4 object-left" >
-          <div>
-            <img
-              className="h-auto w-auto max-w-full rounded-lg object-cover object-center md:h-[480px]"
-              src={activeImage}
-              alt=""
-            />
-          </div>
-          <div className="grid grid-cols-5 gap-4">
-            {formData.images.map((image, index) => (
-              <div key={index}>
-                <img
-                  onClick={() => setActiveImage(image.url)}
-                  src={image.url}
-                  className="h-20 w-auto max-w-full cursor-pointer rounded-lg object-cover object-center"
-                  alt="gallery-image"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <input className="mt-6"
-          type="file"
-          label="Email Address"
-          accept="image/*"
-          multiple
-          onChange={handleImageChange}
-        />
-
         <Card color="transparent" shadow={false}>
           <Typography variant="h4" color="blue-gray">
             Publicar emprendimiento
           </Typography>
-          <Typography color="gray" className="mt-1 font-normal">
+          <Typography color="gray" className="mt-1 mb-5 font-normal">
             Encantado de conocerte. Por favor, proporciona tus datos para la
             creación de un emprendimiento.
           </Typography>
+          <div className="grid gap-4 object-left w-12/12 md:w-12/12 lg:w-6/12 aspect-auto mb-5 ">
+            <div>
+              <img
+                className="h-auto w-auto max-w-full rounded-lg object-cover object-center md:h-[480px]"
+                src={activeImage}
+                alt=""
+              />
+            </div>
+            <div className="grid grid-cols-5 gap-1 aspect-auto">
+              {formData.images.map((image, index) => (
+                <div key={index}>
+                  <img
+                    onClick={() => setActiveImage(image.url)}
+                    src={image.url}
+                    className="h-20 w-auto max-w-full cursor-pointer rounded-lg object-cover object-center"
+                    alt="gallery-image"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <input
+            className="mt-6"
+            type="file"
+            label="Email Address"
+            accept="image/jpeg, image/png"
+            multiple
+            onChange={handleImageChange}
+          />
+
           <form
             onSubmit={handleSubmit}
             className="mb-2 mt-8 w-80 max-w-screen-lg sm:w-96"
