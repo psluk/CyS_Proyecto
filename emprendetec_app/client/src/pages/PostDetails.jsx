@@ -5,13 +5,31 @@ import { useParams } from 'react-router-dom';
 import { Rating } from "@material-tailwind/react";
 import ImageGallery from "react-image-gallery";
 import { Link } from 'react-router-dom';
+//import { useSession } from "../context/SessionContext";
 import "react-image-gallery/styles/css/image-gallery.css";
 
 export default function PostDetails() {
+    //const { getUserEmail } = useSession();
     const [post, setPost] = useState([]);
     const [score, setScore] = useState(1);
     const [images, setImages] = useState([]);
     const params = useParams()
+
+    // const navigationLinks = [
+    //   {
+    //     label: "Mi Perfil",
+    //     path: "/peril",
+    //   },
+    //   {
+    //     label: "Perfil de usuario",
+    //     path: `/usuario/${encodeURI}`,
+    //   },
+    //   {
+    //     label: "Panel de administración",
+    //     path: "/administrar",
+    //     userTypes: ["Administrator"],
+    //   },
+    // ];
 
     useEffect(() => {
         fetchPost();
