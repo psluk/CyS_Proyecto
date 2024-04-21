@@ -27,11 +27,11 @@ export default function Navbar() {
       path: "/administrar",
       userTypes: ["Administrator"],
     },
-    // {
-    //   label: "Mi Perfil",
-    //   path: "/perfil",
-    //   userTypes: ["Administrator", "Professor", "Student"],
-    // },
+    {
+      label: "Mi Perfil",
+      path: "/perfil",
+      userTypes: ["Administrator", "Professor", "Student"],
+    },
     {
       component: (
         <Button variant="gradient" color="blue">
