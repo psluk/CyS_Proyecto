@@ -8,16 +8,24 @@ import {
   Textarea,
 } from "@material-tailwind/react";
 import { Helmet } from "react-helmet-async";
+import { useSession } from "../context/SessionContext";
+import { toast } from "react-toastify";
+import { uploadFilesAndGetDownloadURLs }  from "../config/firebase-config.js";
 
 export default function CreateEntrepreneurship() {
+  const { getUserEmail } = useSession();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    images: [],
+    userEmail: "",
+    // Otros campos de formData aquí
   });
 
+  const [selectedImages, setSelectedImagesURL] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
   const MAX_IMAGE_COUNT = 5;
+
   const [activeImage, setActiveImage] = useState(
     "https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
   );
@@ -31,58 +39,44 @@ export default function CreateEntrepreneurship() {
   };
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    // Verificar el número de imágenes seleccionadas
-  if (files.length > MAX_IMAGE_COUNT) {
-    alert("No puedes seleccionar más de 5 imágenes");
-    return;
-  }
-
-  // Verificar los formatos y tamaños de las imágenes
-  files.forEach((file) => {
-    if (!file.type.startsWith('image/')) {
-      alert("Solo se permiten imágenes en formato JPEG o PNG");
-      return;
+    const files = e.target.files;
+    const imagesArray = [];
+    for (let i = 0; i < files.length; i++) {
+      imagesArray.push(URL.createObjectURL(files[i]));
     }
-    if (file.size > MAX_IMAGE_SIZE) {
-      alert(`La imagen "${file.name}" es demasiado grande. Debe ser menor a 5MB`);
-      return;
-    }
-  });
-    const images = files.map((file) => ({
-      file,
-      url: URL.createObjectURL(file),
-    }));
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      images,
-    }));
+    setSelectedImagesURL(imagesArray);
+    setSelectedFiles(files);
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const uploadedImageUrls =
+      await uploadFilesAndGetDownloadURLs(selectedFiles);
+    console.log("URLs de descarga de las imágenes:", uploadedImageUrls);
+/*
+    const userEmail = getUserEmail();
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      userEmail, // Esto es equivalente a userEmail: userEmail
+    }));
+
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("description", formData.description);
-      formData.images.forEach((image) => {
-        formDataToSend.append("images", image.file);
-      });
-
-      // Make a request to your server to handle the creation of the venture
-      const response = await axios.post("/api/create-venture", formDataToSend);
-
-      // Handle the response, e.g., show success message or redirect to another page
-      console.log(response.data);
+      const createProjectResponse = await axios.post(
+        "/api/emprendimientos/crear",
+        formData,
+      );
+      toast.success("¡Emprendimiento creado exitosamente!");
     } catch (error) {
-      console.error("Error creating venture:", error);
+      toast.error("Ocurrió un error: " + error.message);
     }
+*/
   };
 
   return (
     <div className="min-h-screen w-full flex-col items-start justify-start bg-white p-2 md:p-2 lg:p-32">
       <Helmet>
-        <title>Panel de adminstración | EmprendeTEC</title>
+        <title>Crear emprendemiento | EmprendeTEC</title>
         <link rel="canonical" href="/emprendimientos/crear" />
       </Helmet>
       <>
@@ -90,11 +84,11 @@ export default function CreateEntrepreneurship() {
           <Typography variant="h4" color="blue-gray">
             Publicar emprendimiento
           </Typography>
-          <Typography color="gray" className="mt-1 mb-5 font-normal">
+          <Typography color="gray" className="mb-5 mt-1 font-normal">
             Encantado de conocerte. Por favor, proporciona tus datos para la
             creación de un emprendimiento.
           </Typography>
-          <div className="grid gap-4 object-left w-12/12 md:w-12/12 lg:w-6/12 aspect-auto mb-5 ">
+          <div className="w-12/12 md:w-12/12 mb-5 grid aspect-auto gap-4 object-left lg:w-6/12 ">
             <div>
               <img
                 className="h-auto w-auto max-w-full rounded-lg object-cover object-center md:h-[480px]"
@@ -102,29 +96,28 @@ export default function CreateEntrepreneurship() {
                 alt=""
               />
             </div>
-            <div className="grid grid-cols-5 gap-1 aspect-auto">
-              {formData.images.map((image, index) => (
+            <div className="grid aspect-auto grid-cols-5 gap-1">
+              {selectedImages.map((image, index) => (
                 <div key={index}>
                   <img
-                    onClick={() => setActiveImage(image.url)}
-                    src={image.url}
+                    src={image}
+                    onClick={() => setActiveImage(image)}
                     className="h-20 w-auto max-w-full cursor-pointer rounded-lg object-cover object-center"
-                    alt="gallery-image"
+                    alt={`Image ${index}`}
                   />
                 </div>
               ))}
             </div>
           </div>
-
           <input
+            multiple
             className="mt-6"
             type="file"
-            label="Email Address"
+            label="Image input"
             accept="image/jpeg, image/png"
-            multiple
+            id="images"
             onChange={handleImageChange}
           />
-
           <form
             onSubmit={handleSubmit}
             className="mb-2 mt-8 w-80 max-w-screen-lg sm:w-96"
@@ -153,8 +146,15 @@ export default function CreateEntrepreneurship() {
                 placeholder="Enter venture description"
               />
             </div>
-
-            <Button type="submit">Create Venture</Button>
+            <Button
+              color="teal"
+              size="lg"
+              className="w-full justify-center"
+              type="submit"
+              variant="gradient"
+            >
+              Publicar emprendimiento
+            </Button>
           </form>
         </Card>
       </>
