@@ -126,34 +126,16 @@ router.get("/imagenes/:id", async (req, res) => {
 
 router.post("/crear", async (req, res) => {
   try {
-    const { name, description, imageFiles, userEmail } = req.body;
-    console.log("entraNuevo" + name);
-    console.log("entraNuevo" + description);
-    console.log("entraNuevo" + userEmail);
-    console.log("entraNuevo" + imageFiles.name);
+    const { name, description, userEmail, images } = req.body;
 
-    const imageUrls = [];
-    imageFiles.forEach((file, index) => {
-      console.log(`Archivo ${index + 1}:`);
-      console.log(`Nombre: ${file.name}`);
-      console.log(`Tipo: ${file.type}`);
-      console.log(`Tamaño: ${file.size} bytes`);
+    const imageUrlsString = images.join(',');
+
+    await runStoredProcedure("EmprendeTEC_SP_SaveProject", {
+      IN_userEmail: userEmail,
+      IN_projectName: name,
+      IN_description: description,
+      IN_images: imageUrlsString
     });
-
-    // Subir cada imagen a Firebase y guardar la URL
-    for (const imageFile of imageFiles) {
-      console.log("imageFile: " + imageFile);
-      const imageUrl = await uploadImage(imageFile.file);
-      imageUrls.push(imageUrl);
-    }
-
-    // Llamar al procedimiento almacenado para guardar el proyecto
-    // await runStoredProcedure("EmprendeTEC_SP_SaveProject", {
-    //   IN_userEmail: userEmail,
-    //   IN_projectName: name,
-    //   IN_description: description,
-    //   IN_images: `<Images>${imagesXML}</Images>`
-    // });
 
     res.status(200).json({ message: "Proyecto guardado correctamente" });
   } catch (error) {

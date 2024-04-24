@@ -10,7 +10,9 @@ import {
 import { Helmet } from "react-helmet-async";
 import { useSession } from "../context/SessionContext";
 import { toast } from "react-toastify";
-import { uploadFilesAndGetDownloadURLs }  from "../config/firebase-config.js";
+import { uploadFilesAndGetDownloadURLs } from "../config/firebase-config.js";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile } from "@fortawesome/free-solid-svg-icons";
 
 export default function CreateEntrepreneurship() {
   const { getUserEmail } = useSession();
@@ -27,7 +29,7 @@ export default function CreateEntrepreneurship() {
   const MAX_IMAGE_COUNT = 5;
 
   const [activeImage, setActiveImage] = useState(
-    "https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
+    <FontAwesomeIcon icon={faFile} beat size="2xl"/>,
   );
 
   const handleInputChange = (e) => {
@@ -36,30 +38,53 @@ export default function CreateEntrepreneurship() {
       ...prevFormData,
       [name]: value,
     }));
+    const email = getUserEmail();
+    setFormData((prevFormData) => ({  
+      ...prevFormData,
+      userEmail: email,
+    }));
   };
 
   const handleImageChange = (e) => {
     const files = e.target.files;
+  
+    // Valida que no se hayan seleccionado más de 5 imágenes
+    if (files.length > 5) {
+      alert('No puedes seleccionar más de 5 imágenes');
+      return;
+    }
+  
     const imagesArray = [];
     for (let i = 0; i < files.length; i++) {
+      // Valida que cada imagen no pese más de 1 MB
+      if (files[i].size > 1024 * 1024) {
+        alert('Cada imagen no debe pesar más de 1 MB');
+        return;
+      }
+  
+      // Valida que cada imagen sea de formato JPEG
+      if (files[i].type !== 'image/jpeg') {
+        alert('Solo se aceptan imágenes en formato JPEG');
+        return;
+      }
+  
+      if (i == 0) {
+        setActiveImage(URL.createObjectURL(files[i]));
+      }
       imagesArray.push(URL.createObjectURL(files[i]));
     }
+  
     setSelectedImagesURL(imagesArray);
     setSelectedFiles(files);
   };
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     const uploadedImageUrls =
       await uploadFilesAndGetDownloadURLs(selectedFiles);
+    formData.images = uploadedImageUrls;
     console.log("URLs de descarga de las imágenes:", uploadedImageUrls);
-/*
-    const userEmail = getUserEmail();
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      userEmail, // Esto es equivalente a userEmail: userEmail
-    }));
+    console.log("Datos del formulario:", formData);
 
     try {
       const createProjectResponse = await axios.post(
@@ -70,11 +95,10 @@ export default function CreateEntrepreneurship() {
     } catch (error) {
       toast.error("Ocurrió un error: " + error.message);
     }
-*/
   };
 
   return (
-    <div className="min-h-screen w-full flex-col items-start justify-start bg-white p-2 md:p-2 lg:p-32">
+    <div className="min-h-screen w-full flex-col items-start justify-start bg-white p-2 md:p-2 lg:p-16">
       <Helmet>
         <title>Crear emprendemiento | EmprendeTEC</title>
         <link rel="canonical" href="/emprendimientos/crear" />
@@ -88,13 +112,13 @@ export default function CreateEntrepreneurship() {
             Encantado de conocerte. Por favor, proporciona tus datos para la
             creación de un emprendimiento.
           </Typography>
-          <div className="w-12/12 md:w-12/12 mb-5 grid aspect-auto gap-4 object-left lg:w-6/12 ">
+          <div className="w-12/12 md:w-12/12 mb-5 grid gap-4 object-left lg:w-6/12 ">
             <div>
-              <img
-                className="h-auto w-auto max-w-full rounded-lg object-cover object-center md:h-[480px]"
-                src={activeImage}
-                alt=""
-              />
+              {typeof activeImage === "string" ? (
+                <img className="h-auto w-full max-w-full rounded-lg object-cover object-center md:h-[480px]" src={activeImage} alt="" />
+              ) : (
+                activeImage
+              )}
             </div>
             <div className="grid aspect-auto grid-cols-5 gap-1">
               {selectedImages.map((image, index) => (
