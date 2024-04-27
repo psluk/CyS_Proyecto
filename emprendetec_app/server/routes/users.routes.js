@@ -10,6 +10,26 @@ import { runStoredProcedure } from "../config/database/database-provider.js";
 import admin from "firebase-admin"; // Importa firebase-admin
 
 
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Ejecutar el procedimiento almacenado para obtener datos del usuario
+    const result = await runStoredProcedure("GetProfileData", {inUserID: id});
+    //console.log(result);
+
+    // Verificar si se encontraron datos del usuario
+    if (result.length === 0) {
+      return res.status(404).json({ message: "No se encontró el ususario." });
+    }
+
+    // Devolver los detalles del usuario en la respuesta
+    res.json({ user: result });
+  } catch (error) {
+    console.error('Error al obtener usuario:', error);
+    res.status(500).json({ message: "Ocurrió un error al obtener el usuario." });
+  }
+});
+
 // POST /api/usuarios
 // Creates a new user when the user signs up
 router.post("/registro", async (req, res) => {
@@ -95,6 +115,77 @@ router.post("/registro", async (req, res) => {
     });
 });
 
+router.put("/editar-perfil", async (req, res) => {
+  // Validate the input
+  console.log("Entra aquí")
+  const { givenName, familyName, password, email, image } = req.body;
+  // console.log("GivenName: " + givenName)
+  // console.log("FamilyName: " + familyName)
+  // console.log("Password: " + password)
+  // console.log("Image: " + image)
+  // if (!givenName || !familyName || !email || !password) {
+  //   res.status(400).json({ message: "Faltan parámetros." });
+  //   return;
+  // }
+  try {
+    // Actualizar usuario de la base de datos local
+    const result = await runStoredProcedure("UpdateUser", { IN_email: email, IN_givenName: givenName, IN_familyName: familyName, IN_imageUser: image});
+
+    // Verificar el resultado del procedimiento almacenado
+    if (result === 1) {
+      res.json({ message: "Usuario actualizado exitosamente." });
+    } else if (result === -1) {
+      res.status(404).json({ message: "El usuario no existe en la base de datos local." });
+    } else if (result === -2) {
+      res.status(500).json({ message: "Error interno del servidor al eliminar el usuario." });
+    } else {
+      res.status(500).json({ message: "Resultado inesperado del procedimiento almacenado." });
+    }
+    console.log("Resultado del procedimiento almacenado:", result);
+
+    // Actualizar usuario de Firebase Authentication
+    if (password != '') {
+      const passwordValidation = validatePassword(password);
+  
+      if (!passwordValidation.isValid) {
+        res.status(400).json({
+          message: "Contraseña inválida.",
+          errors: passwordValidation.errors,
+        });
+        return;
+      }
+  
+      await firebaseProvider.auth().getUserByEmail(email)
+        .then(async (userRecord) => {
+          await firebaseProvider.auth().updateUser(userRecord.uid, {
+            password: password,
+            displayName: `${givenName} ${familyName}`,
+          })
+        })
+        .catch((error) => {
+          console.error('Error al actualizar usuario de Firebase:', error);
+          res.status(404).json({ message: "El usuario no existe." });
+          return;
+        });
+      return;
+    }
+  
+    await firebaseProvider.auth().getUserByEmail(email)
+      .then(async (userRecord) => {
+        await firebaseProvider.auth().updateUser(userRecord.uid, {
+          displayName: `${givenName} ${familyName}`,
+        })
+      })
+      .catch((error) => {
+        console.error('Error al actualizar usuario de Firebase:', error);
+        res.status(404).json({ message: "El usuario no existe." });
+        return;
+      });
+  } catch (error) {
+    console.error("Error al actualizar usuario:", error);
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
+});
 
 router.get("/detalles", async (req, res) => {
   try {

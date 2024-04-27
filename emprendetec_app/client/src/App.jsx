@@ -6,6 +6,7 @@ import AdministratorPanel from "./pages/AdministratorPanel";
 import UsersManagement from "./pages/UsersManagement";
 import CreateEntrepreneurship from "./pages/CreateEntrepreneurship";
 import MyProfile from "./pages/MyProfile";
+import ProfileEdit from "./pages/ProfileEdit";
 import ProfileUser from "./pages/ProfileUser";
 import Posts from "./pages/Posts";
 import PostDetails from "./pages/PostDetails";
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/administrar/usuarios" element={<UsersManagement />} />
         <Route path="/emprendimientos/crear" element={<CreateEntrepreneurship />} />
         <Route path="/perfil" element={<MyProfile />} /> 
+        <Route path="/perfil/editar" element={<ProfileEdit />} /> 
         <Route path="/usuario/:id" element={<ProfileUser />} /> 
         <Route path="/emprendimientos" element={<Posts />} />
         <Route path="/emprendimientos/:id" element={<PostDetails />} />

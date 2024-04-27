@@ -49,39 +49,12 @@ router.get("/:id", async (req, res) => {
       .json({ message: "Ocurrió un error al obtener los emprendimientos." });
   }
 });
-router.get("/perfil/:email", async (req, res) => {
-  const { email } = req.params;
-  try {
-    // Ejecutar el procedimiento almacenado para obtener los emprendimientos de un usuario
-    const result = await runStoredProcedure("GetPostsUser", {
-      inUserEmail: email,
-    });
-    console.log(result);
 
-    // Verificar si se encontraron datos de los emprendimientos del usuario
-    if (result.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No se encontraron emprendimientos." });
-    }
-
-    // Devolver los detalles de los emprendimientos del usuario en la respuesta
-    res.json({ posts: result });
-  } catch (error) {
-    console.error("Error al obtener emprendimientos:", error);
-    res.status(500).json({
-      message: "Ocurrió un error al obtener los emprendimientos.",
-    });
-  }
-});
 router.get("/usuario/:id", async (req, res) => {
   const { id } = req.params;
   try {
     // Ejecutar el procedimiento almacenado para obtener los emprendimientos de un usuario
-    const result = await runStoredProcedure("GetPostsUserID", {
-      inUserID: id,
-    });
-    console.log(result);
+    const result = await runStoredProcedure("GetPostsUser", {inUserID: id});
 
     // Verificar si se encontraron datos de los emprendimientos del usuario
     if (result.length === 0) {
