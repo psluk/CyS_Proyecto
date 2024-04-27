@@ -28,7 +28,7 @@ const pool = new ConnectionPool(config);
  * @param {object} params The parameters for the stored procedure
  * @returns The result of the stored procedure
  */
-async function runStoredProcedure(procedureName, params) {
+async function runStoredProcedure(procedureName, params = {}) {
   try {
     // Get a connection from the pool
     const connection = await pool.connect();
