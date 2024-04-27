@@ -22,6 +22,7 @@ const useSession = () => {
 const SessionProvider = ({ children }) => {
   const [user, setUser] = useState(INITIAL_STATE);
   const [loading, setLoading] = useState(INITIAL_STATE !== null);
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -83,8 +84,10 @@ const SessionProvider = ({ children }) => {
         },
       });
       setUser({ ...authUser, customClaims: data.user });
+      setToken(token);
     } else {
       setUser(null);
+      setToken(null);
     }
     setLoading(false);
   };
@@ -107,6 +110,7 @@ const SessionProvider = ({ children }) => {
         isEmailVerified,
         login,
         logout,
+        token,
       }}
     >
       {children}
