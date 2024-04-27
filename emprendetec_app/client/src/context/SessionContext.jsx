@@ -31,6 +31,10 @@ const SessionProvider = ({ children }) => {
     }
   }, [user]);
 
+  const getUserID = () => {
+    return user?.customClaims?.userId;
+  };
+  
   const getUserType = () => {
     return user?.customClaims?.userType;
   };
@@ -100,6 +104,7 @@ const SessionProvider = ({ children }) => {
       value={{
         user,
         loading,
+        getUserID,
         getUserType,
         getUserEmail,
         getUserName,

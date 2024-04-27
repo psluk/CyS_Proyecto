@@ -22,6 +22,17 @@ export default function Emprendimientos() {
     }
   };
 
+  const getImage = (post) => {
+    if (post.ImagePost)
+      return (
+        <img src={post.ImagePost} alt={post.Title} className="w-full h-40 object-cover rounded-lg" />
+    )
+    else
+      return(
+        <img className="rounded-2xl mb-2" src='/default/no-image.jpeg'/>
+    )
+  }
+
   return (
     <>
       <Helmet>
@@ -38,7 +49,7 @@ export default function Emprendimientos() {
               <div key={post.ID} className="bg-gray-100 rounded-lg p-4">
                 {console.log(post.Title)}
                 <Link to={`/emprendimientos/${post.ID}`}>
-                <img src={post.ImagePost} alt={post.Title} className="w-full h-40 object-cover rounded-lg" />
+                {getImage(post)}
                 <div className="items-center justify-between mt-2">
                   <h3 className="text-lg font-medium">{post.Title}</h3>
                   <div className="flex items-center justify-between">
