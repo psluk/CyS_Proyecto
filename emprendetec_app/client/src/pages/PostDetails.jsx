@@ -5,35 +5,20 @@ import { useParams } from 'react-router-dom';
 import { Rating } from "@material-tailwind/react";
 import ImageGallery from "react-image-gallery";
 import { Link } from 'react-router-dom';
-//import { useSession } from "../context/SessionContext";
+import { useSession } from "../context/SessionContext";
 import "react-image-gallery/styles/css/image-gallery.css";
 
 export default function PostDetails() {
-    //const { getUserEmail } = useSession();
+    const { getUserID } = useSession();
     const [post, setPost] = useState([]);
     const [score, setScore] = useState(1);
     const [images, setImages] = useState([]);
     const params = useParams()
 
-    // const navigationLinks = [
-    //   {
-    //     label: "Mi Perfil",
-    //     path: "/peril",
-    //   },
-    //   {
-    //     label: "Perfil de usuario",
-    //     path: `/usuario/${encodeURI}`,
-    //   },
-    //   {
-    //     label: "Panel de administración",
-    //     path: "/administrar",
-    //     userTypes: ["Administrator"],
-    //   },
-    // ];
-
     useEffect(() => {
-        fetchPost();
-        fetchImages();
+      setScore(post.Score)
+      fetchPost();
+      fetchImages();
     }, []);
     
     const fetchPost = async () => {
@@ -43,7 +28,7 @@ export default function PostDetails() {
             if (response.data && response.data.post && response.data.post.length > 0) {
                 setPost(response.data.post[0]);
                 const newScore = Math.round(response.data.post[0].Score);
-                setScore(newScore);
+                setScore(4);
             }
         } catch (error) {
             console.error("Error al obtener el emprendimiento:", error);
@@ -62,6 +47,31 @@ export default function PostDetails() {
       }
     };
 
+    const urlNavigate = () => {
+      if (post.UserID === getUserID()){
+        return `/perfil`
+      }
+      else
+        return `/usuario/${post.UserID}`
+    }
+
+    const getImages = () => {
+      if (images.length != 0)
+        return (
+          <ImageGallery items={images} additionalClass={`style.${image_gallery}`}/>
+      )
+      else
+        return(
+          <img className="rounded-2xl mb-2" src='/default/no-image.jpeg'/>
+      )
+    }
+
+    const getRating = () => {
+      return (
+        <Rating value={post.Score}/>
+      )
+    }
+
     // const score = Math.round(post.Score)
     console.log(`Score: ${score} + ${typeof(score)}`)
     console.log(`Score2: ${post.Score} + ${typeof(post.Score)}`)
@@ -74,14 +84,13 @@ export default function PostDetails() {
         </Helmet>
         <div className="flex min-h-screen w-full items-start justify-start bg-white p-32">
           <div>
-            <ImageGallery items={images} />
+            {getImages()}
           </div>
 
           <div className="w-full ml-16 mr-24">
             <h1 className="text-3xl font-bold">{post && post.Title}</h1>
-            <Link to={`/usuario/${post.UserID}`}><h2 className="text-gray-600 mb-8">{post.FullName}</h2></Link>
-            {console.log("Valor de score:", score)}
-            <Rating value={score}/>
+            <Link to={urlNavigate()}><h2 className="text-gray-600 mb-8">{post.FullName}</h2></Link>
+            {getRating()}
             <p className="mt-8">{post && post.DescriptionPost}</p>
           </div>
           
@@ -89,3 +98,8 @@ export default function PostDetails() {
       </>
     );
   }
+
+const image_gallery = {
+    width: "12",
+    height: "12"
+}
