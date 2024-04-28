@@ -1,6 +1,7 @@
 import express from "express";
 const router = express.Router();
 import { runStoredProcedure } from "../config/database/database-provider.js";
+import { checkPermissions } from "../sessions/session-provider.js";
 
 router.get("/", async (req, res) => {
   try {
@@ -97,7 +98,7 @@ router.get("/imagenes/:id", async (req, res) => {
   }
 });
 
-router.post("/crear", async (req, res) => {
+router.post("/crear", checkPermissions(['Administrator','Professor','Student'], true), async (req, res) => {
   try {
     const { name, description, userEmail, images } = req.body;
 

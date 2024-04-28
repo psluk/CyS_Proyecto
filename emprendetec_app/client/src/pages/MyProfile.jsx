@@ -92,7 +92,7 @@ export default function Perfil() {
             {postsList.map(post => (
               <div key={post.ID} className="bg-gray-100 rounded-lg p-4">
                 {console.log(post.Title)}
-                <Link to={`/emprendimientos/${post.ID}`}>
+                <Link to={`/emprendimientos/ModifyEntrepreneurship/${post.ID}`}>
                 {getImage(post)}
                 <div className="items-center justify-between mt-2">
                   <span className="flex items-center justify-between">

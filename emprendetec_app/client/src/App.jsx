@@ -5,6 +5,7 @@ import SignUp from "./pages/SignUp";
 import AdministratorPanel from "./pages/AdministratorPanel";
 import UsersManagement from "./pages/UsersManagement";
 import CreateEntrepreneurship from "./pages/CreateEntrepreneurship";
+import ModifyEntrepreneurship from "./pages/ModifyEntrepreneurship";
 import MyProfile from "./pages/MyProfile";
 import ProfileEdit from "./pages/ProfileEdit";
 import ProfileUser from "./pages/ProfileUser";
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="/usuario/:id" element={<ProfileUser />} /> 
         <Route path="/emprendimientos" element={<Posts />} />
         <Route path="/emprendimientos/:id" element={<PostDetails />} />
+        <Route path="/emprendimientos/ModifyEntrepreneurship/:id" element={<ModifyEntrepreneurship />} />
       </Routes>
       <ToastContainer
         position="bottom-left"

@@ -80,4 +80,38 @@ const validatePassword = (password) => {
   return {isValid, errors: errorsFound};
 };
 
-export { emailRequirements, validateEmail, passwordRequirements, validatePassword };
+const imageRequirements = [
+  {
+    label: "Tamaño máximo",
+    validate: (file) => file.size <= 1024 * 1024,
+    onErrorMessage: "Cada imagen no debe pesar más de 1 MB.",
+  },
+  {
+    label: "Formato de archivo",
+    validate: (file) => file.type === "image/jpeg",
+    onErrorMessage: "Solo se aceptan imágenes en formato JPEG.",
+  },
+];
+
+/**
+ * Validates the images against specified requirements.
+ * - Maximum of 5 images
+ * - Each image must be in JPEG format
+ * - Each image must be less than 1 MB
+ * @param {File[]} files - Array of File objects representing the selected images.
+ * @returns An object with two properties: isValid (boolean) and errors (array of strings)
+ */
+const validateImages = (files) => {
+  let errorsFound = [];
+  for (let i = 0; i < files.length; i++) {
+    imageRequirements.forEach((requirement) => {
+      if (!requirement.validate(files[i])) {
+        errorsFound.push(requirement.onErrorMessage);
+      }
+    });
+  }
+  const isValid = errorsFound.length === 0;
+  return { isValid, errors: errorsFound };
+};
+
+export { emailRequirements, validateEmail, passwordRequirements, validatePassword, imageRequirements, validateImages};
