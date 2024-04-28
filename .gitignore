@@ -27,3 +27,8 @@ dist-ssr
 # Secret keys
 emprendetec-7fe80-firebase-adminsdk.json
 .env
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
