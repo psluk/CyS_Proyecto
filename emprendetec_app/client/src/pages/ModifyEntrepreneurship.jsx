@@ -1,5 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect} from "react";
 import UseAxios from "../config/customAxios.js";
+import { useParams } from 'react-router-dom';
 import {
   Card,
   Input,
@@ -22,21 +23,67 @@ import { faFile } from "@fortawesome/free-solid-svg-icons";
 export default function CreateEntrepreneurship() {
   const axios = UseAxios();
   const { getUserEmail } = useSession();
+  const { getUserID } = useSession();
+  const [post, setPost] = useState([]);
+    const [score, setScore] = useState(1);
+    const [images, setImages] = useState([]);
+    const params = useParams()
+    const [selectedImages, setSelectedImagesURL] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+    const MAX_IMAGE_COUNT = 5;
+    
+
+  useEffect(() => {
+    setScore(post.Score)
+    fetchPost();
+    fetchImages();
+  }, []);
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     userEmail: "",
-    // Otros campos de formData aquí
   });
 
-  const [selectedImages, setSelectedImagesURL] = useState([]);
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
-  const MAX_IMAGE_COUNT = 5;
+  const fetchPost = async () => {
+      try {
+          const response = await axios.get(`/api/emprendimientos/${params.id}`);
+          
+          if (response.data && response.data.post && response.data.post.length > 0) {
+              setPost(response.data.post[0]);
+              const newScore = Math.round(response.data.post[0].Score);
+              setScore(4);
+          }
+      } catch (error) {
+          console.error("Error al obtener el emprendimiento:", error);
+      }
+  };
+  const fetchImages = async () => {
+    try {
+        const response = await axios.get(`/api/emprendimientos/imagenes/${params.id}`);
+        
+        if (response.data && response.data.images && response.data.images.length > 0) {
+            const imagesArray = [];
+            for (let i = 0; i < response.data.images.length; i++) {
+                if (i === 0) {
+                  setActiveImage(response.data.images[i].original);
+                }
+                imagesArray.push(response.data.images[i].original);
+              }      
+            setImages(response.data.images);
+            setSelectedImagesURL(imagesArray);
+        }
+    } catch (error) {
+        console.error("Error al obtener las imagenes:", error);
+    }
+  };
+
 
   const [activeImage, setActiveImage] = useState(
     <FontAwesomeIcon icon={faFile} beat size="2xl" />,
   );
+
   const [loading, setLoading] = useState(false);
   //////////////////////////
   const fileInputRef = useRef();
@@ -122,8 +169,8 @@ export default function CreateEntrepreneurship() {
   return (
     <>
       <Helmet>
-        <title>Crear emprendemiento | EmprendeTEC</title>
-        <link rel="canonical" href="/emprendimientos/crear" />
+        <title>Modificar emprendemiento | EmprendeTEC</title>
+        <link rel="canonical" href="/emprendimientos/ModifyEntrepreneurship/:id" />
       </Helmet>
       <main className="w-full max-w-7xl space-y-12 px-6">
         <div className="min-h-screen w-full flex-col items-start justify-start bg-white p-2 md:p-2 lg:p-16">
@@ -136,11 +183,10 @@ export default function CreateEntrepreneurship() {
             {
               <Card color="transparent" shadow={false}>
                 <Typography variant="h4" color="blue-gray">
-                  Publicar emprendimiento
+                    Modificar emprendimiento
                 </Typography>
                 <Typography color="gray" className="mb-5 mt-1 font-normal">
-                  Encantado de conocerte. Por favor, proporciona tus datos para
-                  la creación de un emprendimiento.
+                  Encantado de conocerte. Por favor, proporciona tus datos para modificar el emprendimiento.
                 </Typography>
                 <div className="w-12/12 md:w-12/12 mb-5 grid gap-4 object-center lg:w-6/12 ">
                   <div className="flex items-center justify-center ">
@@ -207,7 +253,7 @@ export default function CreateEntrepreneurship() {
                       required={true}
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Enter venture name"
+                      placeholder= {post.Title}
                       className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
                       labelProps={{
                         className: "before:content-none after:content-none",
@@ -226,7 +272,7 @@ export default function CreateEntrepreneurship() {
                       required={true}
                       value={formData.description}
                       onChange={handleInputChange}
-                      placeholder="Enter venture description"
+                      placeholder={post.Title}
                     />
                   </div>
                   <Button

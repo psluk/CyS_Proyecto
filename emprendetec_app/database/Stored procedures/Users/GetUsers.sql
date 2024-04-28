@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------
--- Author:       Paúl Rodríguez García
+-- Author:       Jasson Segura Jimenez
 -- Date:         2024-03-26
--- Description:  Creates a new user in the database after they sign up
+-- Description:  Gets the details of a user
 --------------------------------------------------------------------------
 
 CREATE OR ALTER PROCEDURE  [dbo].[GetUserDetails]
