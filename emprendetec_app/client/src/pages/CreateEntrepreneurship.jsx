@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import UseAxios from "../config/customAxios.js";
 import {
   Card,
@@ -6,7 +6,7 @@ import {
   Button,
   Typography,
   Textarea,
-  Spinner,
+  Spinner, Switch, IconButton, Dialog, DialogHeader, DialogBody, List, ListItem
 } from "@material-tailwind/react";
 import {
   imageRequirements,
@@ -17,7 +17,11 @@ import { useSession } from "../context/SessionContext";
 import { toast } from "react-toastify";
 import { uploadFilesAndGetDownloadURLs } from "../config/firebase-config.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile } from "@fortawesome/free-solid-svg-icons";
+import { faFile, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { defaultError } from "../utils/ErrorSettings.js";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import "../styles/leaflet.css";
+import { defaultZoom, tecCoordinates } from "../constants/mapData.js";
 
 export default function CreateEntrepreneurship() {
   const axios = UseAxios();
@@ -26,13 +30,19 @@ export default function CreateEntrepreneurship() {
     name: "",
     description: "",
     userEmail: "",
-    // Otros campos de formData aquí
+    location: "",
+    latitude: null,
+    longitude: null,
+    building_number: null,
   });
 
   const [selectedImages, setSelectedImagesURL] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
   const MAX_IMAGE_COUNT = 5;
+  const [inPerson, setInPerson] = useState(false);
+  const [locations, setLocations] = useState([]);
+  const [isSelectingPlace, setIsSelectingPlace] = useState(false);
 
   const [activeImage, setActiveImage] = useState(
     <FontAwesomeIcon icon={faFile} beat size="2xl" />,
@@ -80,7 +90,6 @@ export default function CreateEntrepreneurship() {
   const handleClick = () => {
     fileInputRef.current.click();
   };
-  //////////////////////////
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -106,10 +115,16 @@ export default function CreateEntrepreneurship() {
         await uploadFilesAndGetDownloadURLs(selectedFiles);
       formData.images = uploadedImageUrls;
       console.log("URLs de descarga de las imágenes:", uploadedImageUrls);
-      console.log("Datos del formulario:", formData);
+      console.log("Datos del formulario:", {
+        ...formData,
+        location: formData.building_number ? `${formData.building_number} - ${formData.location}` : formData.location
+      });
       setLoading(false);
       axios
-        .post("/api/emprendimientos/crear", formData)
+        .post("/api/emprendimientos/crear", {
+          ...formData,
+          location: formData.building_number ? `${formData.building_number} - ${formData.location}` : formData.location
+        })
         .then(() => {
           toast.success("¡Emprendimiento creado exitosamente!");
         })
@@ -119,10 +134,51 @@ export default function CreateEntrepreneurship() {
     }
   };
 
+  const handlePlaceSearch = async (e) => {
+    e.preventDefault();
+    const searchedLocation = formData.location;
+
+    axios.get(`/api/lugares/buscar/${searchedLocation}`).then((response) => {
+      const loadedLocations = response.data?.results ?? [];
+      setLocations(loadedLocations);
+
+      if (loadedLocations.length === 0) {
+        toast.error("No se encontraron lugares. Intentá con otro término de búsqueda o por número de edificio.");
+      } else {
+        if (loadedLocations.length === 1) {
+          const location = loadedLocations[0];
+          setFormData({
+            ...formData,
+            location: location.name,
+            latitude: location.latitude,
+            longitude: location.longitude,
+            building_number: location.building_number,
+          });
+        } else {
+          setIsSelectingPlace(true);
+        }
+      }
+    }).catch((error) => {
+      toast.error(error?.response?.data?.message ?? defaultError);
+    });
+  }
+
+  useEffect(() => {
+    if (!inPerson) {
+      setFormData({
+        ...formData,
+        location: "",
+        latitude: null,
+        longitude: null,
+        building_number: null,
+      });
+    }
+  }, [inPerson]);
+
   return (
     <>
       <Helmet>
-        <title>Crear emprendemiento | EmprendeTEC</title>
+        <title>Crear emprendimiento | EmprendeTEC</title>
         <link rel="canonical" href="/emprendimientos/crear" />
       </Helmet>
       <main className="w-full max-w-7xl space-y-12 px-6">
@@ -210,7 +266,7 @@ export default function CreateEntrepreneurship() {
                       placeholder="Enter venture name"
                       className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
                       labelProps={{
-                        className: "before:content-none after:content-none",
+                        className: "before:content-none after:content-none"
                       }}
                     />
                     <Typography
@@ -228,11 +284,71 @@ export default function CreateEntrepreneurship() {
                       onChange={handleInputChange}
                       placeholder="Enter venture description"
                     />
+                    <Switch
+                      label="Presencial"
+                      onChange={(e) => setInPerson(e.target.checked)}
+                      value={inPerson}
+                    />
+                    {
+                      inPerson && (
+                        <>
+                          <div className="flex w-full gap-2 items-center">
+                            <Input
+                              size="lg"
+                              type="text"
+                              name="location"
+                              required={true}
+                              value={formData.location}
+                              onChange={handleInputChange}
+                              label="Ubicación"
+                              className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  handlePlaceSearch(e);
+                                }
+                              }}
+                            />
+                            <IconButton variant="text" onClick={handlePlaceSearch}>
+                              <FontAwesomeIcon icon={faMagnifyingGlass} />
+                            </IconButton>
+                          </div>
+                          <div
+                            className="w-full [&>.leaflet-container]:h-96 rounded-xl border-2 border-gray-300 overflow-hidden"
+                          >
+                            <MapContainer
+                              center={tecCoordinates}
+                              zoom={defaultZoom}
+                              scrollWheelZoom={true}
+                              className={"w-full h-full"}
+                            >
+                              <TileLayer
+                                attribution={`&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors`}
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                              />
+                              {
+                                formData.latitude && formData.longitude &&
+                                <Marker
+                                  position={[formData.latitude, formData.longitude]}
+                                >
+                                  <Popup>
+                                    <span className="font-bold">
+                                      {formData.building_number}
+                                    </span>
+                                    <span className="font-bold px-1">·</span>
+                                    {formData.location}
+                                  </Popup>
+                                </Marker>
+                              }
+                            </MapContainer>
+                          </div>
+                        </>
+                      )
+                    }
                   </div>
                   <Button
                     color="teal"
                     size="lg"
-                    className="w-full justify-center"
+                    className="w-full justify-center mt-5"
                     type="submit"
                     variant="gradient"
                   >
@@ -243,6 +359,46 @@ export default function CreateEntrepreneurship() {
             }
           </div>
         </div>
+        <Dialog
+          size="xs"
+          open={isSelectingPlace}
+          handler={() => setIsSelectingPlace(false)}
+        >
+          <DialogHeader className="text-teal-700">
+            Seleccionar lugar
+          </DialogHeader>
+          <DialogBody className="overflow-y-auto !px-5 !pt-0">
+            <Typography className="text-sm mb-5">Se encontraron {locations.length} resultados durante la
+              búsqueda.</Typography>
+            <List className="flex flex-col">
+              {
+                locations.map((location, index) => (
+                  <ListItem key={index} className="grow text-start" onClick={
+                    () => {
+                      setFormData({
+                        ...formData,
+                        location: location.name,
+                        latitude: location.latitude,
+                        longitude: location.longitude,
+                        building_number: location.building_number,
+                      });
+                      setIsSelectingPlace(false);
+                    }
+                  }
+                  >
+                    {
+                      location.building_number &&
+                      <><span className="font-bold">{location.building_number}</span>
+                        <span className="font-bold px-1">·</span>
+                      </>
+                    }
+                    {location.name}
+                  </ListItem>
+                ))
+              }
+            </List>
+          </DialogBody>
+        </Dialog>
       </main>
     </>
   );

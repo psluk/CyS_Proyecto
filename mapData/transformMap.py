@@ -143,7 +143,7 @@ def setup_database(database_file: str) -> tuple:
     ''')
     c.execute('''
         CREATE TABLE IF NOT EXISTS nodes
-        (id TEXT PRIMARY KEY, name TEXT, normalized_name TEXT, building_number TEXT, latitude REAL, longitude REAL);
+        (id INTEGER PRIMARY KEY, name TEXT, normalized_name TEXT, building_number TEXT, latitude REAL, longitude REAL);
     ''')
     c.execute('''
         CREATE TABLE IF NOT EXISTS node_types
@@ -151,7 +151,7 @@ def setup_database(database_file: str) -> tuple:
     ''')
     c.execute('''
         CREATE TABLE IF NOT EXISTS ways
-        (id TEXT PRIMARY KEY, name TEXT, normalized_name TEXT, building_number TEXT);
+        (id INTEGER PRIMARY KEY, name TEXT, normalized_name TEXT, building_number TEXT);
     ''')
     c.execute('''
         CREATE TABLE IF NOT EXISTS way_types
@@ -159,7 +159,7 @@ def setup_database(database_file: str) -> tuple:
     ''')
     c.execute('''
         CREATE TABLE IF NOT EXISTS relations
-        (id TEXT PRIMARY KEY, name TEXT, normalized_name TEXT, building_number TEXT);
+        (id INTEGER PRIMARY KEY, name TEXT, normalized_name TEXT, building_number TEXT);
     ''')
     c.execute('''
         CREATE TABLE IF NOT EXISTS relation_types

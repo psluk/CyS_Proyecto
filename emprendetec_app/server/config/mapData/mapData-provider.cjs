@@ -63,7 +63,7 @@ const searchMap = (searchTerm) => {
   results.forEach((result) => {
     result.type = result.type.split(",").map((t) => {
       const [category, type] = t.split(": ");
-      return { category, type };
+      return { category, type: type.split(";").map((type) => type.trim()) };
     });
   });
 
