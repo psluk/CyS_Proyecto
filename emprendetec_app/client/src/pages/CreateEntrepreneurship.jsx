@@ -114,7 +114,6 @@ export default function CreateEntrepreneurship() {
       const uploadedImageUrls =
         await uploadFilesAndGetDownloadURLs(selectedFiles);
       formData.images = uploadedImageUrls;
-      console.log("URLs de descarga de las imágenes:", uploadedImageUrls);
       console.log("Datos del formulario:", {
         ...formData,
         location: formData.building_number ? `${formData.building_number} - ${formData.location}` : formData.location
@@ -249,40 +248,23 @@ export default function CreateEntrepreneurship() {
                   className="mb-2 mt-8 w-80 max-w-screen-lg sm:w-96"
                 >
                   <div className="mb-1 flex flex-col gap-6">
-                    <Typography
-                      variant="h6"
-                      color="blue-gray"
-                      className="-mb-3"
-                    >
-                      Nombre del emprendimiento
-                    </Typography>
                     <Input
                       size="lg"
+                      variant="outlined"
                       type="text"
                       name="name"
                       required={true}
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Enter venture name"
-                      className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                      labelProps={{
-                        className: "before:content-none after:content-none"
-                      }}
+                      label="Nombre del emprendimiento"
                     />
-                    <Typography
-                      variant="h6"
-                      color="blue-gray"
-                      className="-mb-3"
-                    >
-                      Descripción del emprendimiento
-                    </Typography>
                     <Textarea
                       variant="outlined"
                       name="description"
                       required={true}
                       value={formData.description}
                       onChange={handleInputChange}
-                      placeholder="Enter venture description"
+                      label="Descripción del emprendimiento"
                     />
                     <Switch
                       label="Presencial"

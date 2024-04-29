@@ -100,14 +100,19 @@ router.get("/imagenes/:id", async (req, res) => {
 
 router.post("/crear", checkPermissions(['Administrator','Professor','Student'], true), async (req, res) => {
   try {
-    const { name, description, userEmail, images } = req.body;
-
+    const { name, description, userEmail, images, location, latitude, longitude } = req.body;
+    console.log("hola");
+    console.log("entraNuevo2222: " + name + " " + description + " " + userEmail + " " + images + " " + latitude + " " + location + " " + longitude);
+    console.log("adios");
     const imageUrlsString = images.join(',');
 
     await runStoredProcedure("EmprendeTEC_SP_SaveProject", {
       IN_userEmail: userEmail,
       IN_projectName: name,
       IN_description: description,
+      IN_location: location,
+      IN_latitude: latitude,
+      IN_longitude: longitude,
       IN_images: imageUrlsString
     });
 

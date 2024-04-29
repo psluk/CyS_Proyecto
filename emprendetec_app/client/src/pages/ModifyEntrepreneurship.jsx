@@ -254,6 +254,7 @@ export default function CreateEntrepreneurship() {
                       value={formData.name}
                       onChange={handleInputChange}
                       placeholder= {post.Title}
+                      label="Nombre del emprendimiento"
                       className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
                       labelProps={{
                         className: "before:content-none after:content-none",
@@ -273,6 +274,7 @@ export default function CreateEntrepreneurship() {
                       value={formData.description}
                       onChange={handleInputChange}
                       placeholder={post.Title}
+                      label="Descripción del emprendimiento"
                     />
                   </div>
                   <Button

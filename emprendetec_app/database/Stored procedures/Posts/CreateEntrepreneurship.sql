@@ -8,6 +8,9 @@ CREATE OR ALTER PROCEDURE [dbo].[EmprendeTEC_SP_SaveProject]
 	@IN_projectName NVARCHAR(50),
     @IN_description NVARCHAR(255),
     @IN_userEmail NVARCHAR(255),
+    @IN_location NVARCHAR(255),
+    @IN_latitude FLOAT,
+    @IN_longitude FLOAT,
     @IN_images NVARCHAR(MAX)
 AS
 BEGIN
@@ -45,6 +48,9 @@ BEGIN
             [userId],
             [title],
             [description],
+            [location],
+            [longitude],
+            [latitude],
             [rating],
             [timestamp]
         )
@@ -53,6 +59,9 @@ BEGIN
             @userId,
             @IN_projectName,
             @IN_description,
+            @IN_location,
+            @IN_longitude,
+            @IN_latitude,          
             0,
             GETDATE()
         );
