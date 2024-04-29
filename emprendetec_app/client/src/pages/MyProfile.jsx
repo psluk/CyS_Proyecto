@@ -6,18 +6,24 @@ import axios from "axios";
 
 
 export default function Perfil() {
-  const { getUserID } = useSession();
+  const { getUserID, loading } = useSession();
   const [postsList, setPostsList] = useState([]);
   const [user, setUser] = useState([]);
   const [userId, setUserID] = useState(getUserID());
   const [userImage, setUserImage] = useState('/default/perfil.png');
 
   useEffect(() => {
-    //const userId = getUserID()
-    console.log("ID Usuario: " + getUserID())
-    fetchUser();
-    fetchPosts();
-  }, []);
+    if (userId){
+      fetchUser();
+      fetchPosts();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (!loading){
+      setUserID(getUserID());
+    }
+  }, [loading]);
 
   const fetchUser = async () => {
     try {

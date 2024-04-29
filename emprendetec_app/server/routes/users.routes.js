@@ -137,7 +137,7 @@ router.put("/editar-perfil", async (req, res) => {
     } else if (result === -1) {
       res.status(404).json({ message: "El usuario no existe en la base de datos local." });
     } else if (result === -2) {
-      res.status(500).json({ message: "Error interno del servidor al eliminar el usuario." });
+      res.status(500).json({ message: "Error interno del servidor al actualizar el usuario." });
     } else {
       res.status(500).json({ message: "Resultado inesperado del procedimiento almacenado." });
     }

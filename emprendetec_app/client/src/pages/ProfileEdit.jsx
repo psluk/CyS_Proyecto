@@ -148,13 +148,12 @@ const ProfileEdit = () => {
                 <input type="file" id="profileimg" className="hidden" onChange={(e) => setUserImage(URL.createObjectURL(e.target.files[0]))}></input>
             </div>
         </div>
-        <button
-            className="flex m-auto bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded"
-            type="button"
-            onClick={handleSubmit}
+        <Button
+          className="flex m-auto bg-teal-500 hover:bg-teal-700 text-white font-bold px-4"
+          onClick={handleSubmit}
         >
-            Confirmar cambios
-        </button>
+          Confirmar cambios
+        </Button>
       </div>
     </>
   );
