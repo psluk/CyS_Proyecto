@@ -299,6 +299,7 @@ export default function CreateEntrepreneurship() {
                                   handlePlaceSearch(e);
                                 }
                               }}
+                              placeholder="Nombre o número de edificio"
                             />
                             <IconButton variant="text" onClick={handlePlaceSearch} disabled={isSearchingPlace}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
