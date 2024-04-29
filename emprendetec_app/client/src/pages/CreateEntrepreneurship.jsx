@@ -38,8 +38,6 @@ export default function CreateEntrepreneurship() {
 
   const [selectedImages, setSelectedImagesURL] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
-  const MAX_IMAGE_COUNT = 5;
   const [inPerson, setInPerson] = useState(false);
   const [locations, setLocations] = useState([]);
   const [isSelectingPlace, setIsSelectingPlace] = useState(false);
@@ -48,7 +46,7 @@ export default function CreateEntrepreneurship() {
     <FontAwesomeIcon icon={faFile} beat size="2xl" />,
   );
   const [loading, setLoading] = useState(false);
-  //////////////////////////
+
   const fileInputRef = useRef();
 
   const handleDragOver = (e) => {
@@ -114,10 +112,6 @@ export default function CreateEntrepreneurship() {
       const uploadedImageUrls =
         await uploadFilesAndGetDownloadURLs(selectedFiles);
       formData.images = uploadedImageUrls;
-      console.log("Datos del formulario:", {
-        ...formData,
-        location: formData.building_number ? `${formData.building_number} - ${formData.location}` : formData.location
-      });
       setLoading(false);
       axios
         .post("/api/emprendimientos/crear", {
