@@ -56,7 +56,7 @@ const searchMap = (searchTerm) => {
                OR r.building_number LIKE ?
             GROUP BY r.id)
       WHERE id IS NOT NULL
-      GROUP BY id;
+      ORDER BY name;
   `).all(`%${searchTerm}%`, `${searchTerm}`, `%${searchTerm}%`, `${searchTerm}`, `%${searchTerm}%`, `${searchTerm}`);
 
   // Convert the string of types to an array
