@@ -15,12 +15,12 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
-
+let analytics = null;
 if (
   process.env.NODE_ENV !== "development" &&
   window.location.hostname !== "localhost"
 ) {
-  getAnalytics(app);
+  analytics = getAnalytics(app);
 }
 const uploadFilesAndGetDownloadURLs = async (files) => {
   const downloadURLs = [];
@@ -32,11 +32,11 @@ const uploadFilesAndGetDownloadURLs = async (files) => {
       const downloadURL = await getDownloadURL(storageRef);
       downloadURLs.push(downloadURL);
     } catch (error) {
-      console.error('Error al subir el archivo:', error);
+      console.error("Error al subir el archivo:", error);
     }
   }
 
   return downloadURLs;
 };
 
-export { storage, uploadFilesAndGetDownloadURLs };
+export { storage, uploadFilesAndGetDownloadURLs, analytics };

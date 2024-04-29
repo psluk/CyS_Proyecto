@@ -15,6 +15,8 @@ import {
   faQuestion,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
+import { analytics } from "../config/firebase-config";
+import { logEvent } from "firebase/analytics";
 
 const ProfileEdit = () => {
   const axios = UseAxios();
@@ -66,7 +68,7 @@ const ProfileEdit = () => {
         setGivenName(response.data.user[0].GivenName);
         setFamilyName(response.data.user[0].FamilyName);
         setEmail(response.data.user[0].Email);
-        if (response.data.user[0].ImageUser != null){
+        if (response.data.user[0].ImageUser != null) {
           setUserImage(response.data.user[0].ImageUser);
         }
       }
@@ -265,6 +267,5 @@ const ProfileEdit = () => {
     </>
   );
 };
-
 
 export default ProfileEdit;

@@ -6,11 +6,16 @@ import {
   Button,
   Typography,
   Textarea,
-  Spinner, Switch, IconButton, Dialog, DialogHeader, DialogBody, List, ListItem
+  Spinner,
+  Switch,
+  IconButton,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  List,
+  ListItem,
 } from "@material-tailwind/react";
-import {
-  validateImages,
-} from "../../../common/utils/validations";
+import { validateImages } from "../../../common/utils/validations";
 import { Helmet } from "react-helmet-async";
 import { useSession } from "../context/SessionContext";
 import { toast } from "react-toastify";
@@ -23,7 +28,8 @@ import "../styles/leaflet.css";
 import { defaultZoom, tecCoordinates } from "../constants/mapData.js";
 import DraggableMarker from "../components/DraggableMarker.jsx";
 import CustomMapMarker from "../components/CustomMapMarker.js";
-
+import { analytics } from "../config/firebase-config.js";
+import { logEvent } from "firebase/analytics";
 export default function CreateEntrepreneurship() {
   const axios = UseAxios();
   const { getUserEmail } = useSession();
@@ -118,10 +124,22 @@ export default function CreateEntrepreneurship() {
       axios
         .post("/api/emprendimientos/crear", {
           ...formData,
-          location: formData.building_number ? `${formData.building_number} - ${formData.location}` : formData.location
+          location: formData.building_number
+            ? `${formData.building_number} - ${formData.location}`
+            : formData.location,
         })
         .then(() => {
           toast.success("¡Emprendimiento creado exitosamente!");
+          if (analytics) {
+            logEvent(analytics, "create_entrepreneurship", {
+              name: formData.name,
+              description: formData.description,
+              userEmail: formData.userEmail,
+              location: formData.building_number
+                ? `${formData.building_number} - ${formData.location}`
+                : formData.location,
+            });
+          }
         })
         .catch((error) => {
           toast.error(error?.response?.data?.message ?? defaultError);
@@ -134,32 +152,38 @@ export default function CreateEntrepreneurship() {
     const searchedLocation = formData.location;
     setIsSearchingPlace(true);
 
-    axios.get(`/api/lugares/buscar/${searchedLocation}`).then((response) => {
-      const loadedLocations = response.data?.results ?? [];
-      setLocations(loadedLocations);
+    axios
+      .get(`/api/lugares/buscar/${searchedLocation}`)
+      .then((response) => {
+        const loadedLocations = response.data?.results ?? [];
+        setLocations(loadedLocations);
 
-      if (loadedLocations.length === 0) {
-        toast.error("No se encontraron lugares. Intentá con otro término de búsqueda o por número de edificio.");
-      } else {
-        if (loadedLocations.length === 1) {
-          const location = loadedLocations[0];
-          setFormData({
-            ...formData,
-            location: location.name,
-            latitude: location.latitude,
-            longitude: location.longitude,
-            building_number: location.building_number,
-          });
+        if (loadedLocations.length === 0) {
+          toast.error(
+            "No se encontraron lugares. Intentá con otro término de búsqueda o por número de edificio.",
+          );
         } else {
-          setIsSelectingPlace(true);
+          if (loadedLocations.length === 1) {
+            const location = loadedLocations[0];
+            setFormData({
+              ...formData,
+              location: location.name,
+              latitude: location.latitude,
+              longitude: location.longitude,
+              building_number: location.building_number,
+            });
+          } else {
+            setIsSelectingPlace(true);
+          }
         }
-      }
-    }).catch((error) => {
-      toast.error(error?.response?.data?.message ?? defaultError);
-    }).finally(() => {
-      setIsSearchingPlace(false);
-    });
-  }
+      })
+      .catch((error) => {
+        toast.error(error?.response?.data?.message ?? defaultError);
+      })
+      .finally(() => {
+        setIsSearchingPlace(false);
+      });
+  };
 
   useEffect(() => {
     if (!inPerson) {
@@ -271,90 +295,91 @@ export default function CreateEntrepreneurship() {
                       value={inPerson}
                       color="teal"
                     />
-                    {
-                      inPerson && (
-                        <>
-                          <div className="flex w-full gap-2 items-center">
-                            <Input
-                              size="lg"
-                              type="text"
-                              name="location"
-                              required={true}
-                              value={formData.location}
-                              onChange={(e) => {
-                                // Close popup if closed
-                                if (mapPopupRef.current) {
-                                  console.log(mapPopupRef.current)
-                                  mapPopupRef.current._closeButton?.click();
-                                }
-                                setFormData({
-                                  ...formData,
-                                  building_number: null,
-                                });
-                                handleInputChange(e);
-                              }}
-                              label="Ubicación"
-                              onKeyPress={(e) => {
-                                if (e.key === "Enter") {
-                                  handlePlaceSearch(e);
-                                }
-                              }}
-                              placeholder="Nombre o número de edificio"
-                            />
-                            <IconButton variant="text" onClick={handlePlaceSearch} disabled={isSearchingPlace}>
-                              <FontAwesomeIcon icon={faMagnifyingGlass} />
-                            </IconButton>
-                          </div>
-                          <div
-                            className="w-full [&>.leaflet-container]:h-96 rounded-xl border-2 border-gray-300 overflow-hidden"
-                          >
-                            <MapContainer
-                              center={tecCoordinates}
-                              zoom={defaultZoom}
-                              scrollWheelZoom={true}
-                              className={"w-full h-full"}
-                            >
-                              <TileLayer
-                                attribution={`&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors`}
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                              />
-                              {
-                                formData.latitude && formData.longitude &&
-                                <DraggableMarker
-                                  position={[formData.latitude, formData.longitude]}
-                                  setPosition={(position) => {
-                                    setFormData({
-                                      ...formData,
-                                      latitude: position.lat,
-                                      longitude: position.lng,
-                                    });
-                                  }}
-                                  icon={CustomMapMarker}
-                                >
-                                  <Popup ref={mapPopupRef}>
-                                    {
-                                      formData.building_number &&
-                                      <>
-                                        <span className="font-bold">
-                                          {formData.building_number}
-                                        </span>
-                                        <span className="font-bold px-1">·</span>
-                                      </>
-                                    }
-                                    {formData.location}
-                                  </Popup>
-                                </DraggableMarker>
+                    {inPerson && (
+                      <>
+                        <div className="flex w-full items-center gap-2">
+                          <Input
+                            size="lg"
+                            type="text"
+                            name="location"
+                            required={true}
+                            value={formData.location}
+                            onChange={(e) => {
+                              // Close popup if closed
+                              if (mapPopupRef.current) {
+                                console.log(mapPopupRef.current);
+                                mapPopupRef.current._closeButton?.click();
                               }
-                            </MapContainer>
-                          </div>
-                        </>
-                      )
-                    }
+                              setFormData({
+                                ...formData,
+                                building_number: null,
+                              });
+                              handleInputChange(e);
+                            }}
+                            label="Ubicación"
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                handlePlaceSearch(e);
+                              }
+                            }}
+                            placeholder="Nombre o número de edificio"
+                          />
+                          <IconButton
+                            variant="text"
+                            onClick={handlePlaceSearch}
+                            disabled={isSearchingPlace}
+                          >
+                            <FontAwesomeIcon icon={faMagnifyingGlass} />
+                          </IconButton>
+                        </div>
+                        <div className="w-full overflow-hidden rounded-xl border-2 border-gray-300 [&>.leaflet-container]:h-96">
+                          <MapContainer
+                            center={tecCoordinates}
+                            zoom={defaultZoom}
+                            scrollWheelZoom={true}
+                            className={"h-full w-full"}
+                          >
+                            <TileLayer
+                              attribution={`&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors`}
+                              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            />
+                            {formData.latitude && formData.longitude && (
+                              <DraggableMarker
+                                position={[
+                                  formData.latitude,
+                                  formData.longitude,
+                                ]}
+                                setPosition={(position) => {
+                                  setFormData({
+                                    ...formData,
+                                    latitude: position.lat,
+                                    longitude: position.lng,
+                                  });
+                                }}
+                                icon={CustomMapMarker}
+                              >
+                                <Popup ref={mapPopupRef}>
+                                  {formData.building_number && (
+                                    <>
+                                      <span className="font-bold">
+                                        {formData.building_number}
+                                      </span>
+                                      <span className="px-1 font-bold">·</span>
+                                    </>
+                                  )}
+                                  {formData.location}
+                                </Popup>
+                              </DraggableMarker>
+                            )}
+                          </MapContainer>
+                        </div>
+                      </>
+                    )}
                   </div>
                   <Button
                     color="teal"
                     size="lg"
-                    className="w-full justify-center mt-5"
+                    className="mt-5 w-full justify-center"
                     type="submit"
                     variant="gradient"
                   >
@@ -369,41 +394,42 @@ export default function CreateEntrepreneurship() {
           size="xs"
           open={isSelectingPlace}
           handler={() => setIsSelectingPlace(false)}
-          className="max-h-[calc(100vh-5rem)] flex flex-col w-full"
+          className="flex max-h-[calc(100vh-5rem)] w-full flex-col"
         >
           <DialogHeader className="text-teal-700">
             Seleccionar lugar
           </DialogHeader>
-          <DialogBody className="!px-5 !pt-0 flex flex-col overflow-y-auto">
-            <Typography className="text-sm mb-5">Se encontraron {locations.length} resultados durante la
-              búsqueda.</Typography>
+          <DialogBody className="flex flex-col overflow-y-auto !px-5 !pt-0">
+            <Typography className="mb-5 text-sm">
+              Se encontraron {locations.length} resultados durante la búsqueda.
+            </Typography>
             <List className="overflow-y-auto">
-              {
-                locations.map((location, index) => (
-                  <ListItem key={index} className="w-full text-start active:p-3" onClick={
-                    () => {
-                      setFormData({
-                        ...formData,
-                        location: location.name,
-                        latitude: location.latitude,
-                        longitude: location.longitude,
-                        building_number: location.building_number,
-                      });
-                      setIsSelectingPlace(false);
-                    }
-                  }
-                  >
-                    {
-                      location.building_number &&
-                      <>
-                        <span className="font-bold">{location.building_number}</span>
-                        <span className="font-bold px-1">·</span>
-                      </>
-                    }
-                    {location.name}
-                  </ListItem>
-                ))
-              }
+              {locations.map((location, index) => (
+                <ListItem
+                  key={index}
+                  className="w-full text-start active:p-3"
+                  onClick={() => {
+                    setFormData({
+                      ...formData,
+                      location: location.name,
+                      latitude: location.latitude,
+                      longitude: location.longitude,
+                      building_number: location.building_number,
+                    });
+                    setIsSelectingPlace(false);
+                  }}
+                >
+                  {location.building_number && (
+                    <>
+                      <span className="font-bold">
+                        {location.building_number}
+                      </span>
+                      <span className="px-1 font-bold">·</span>
+                    </>
+                  )}
+                  {location.name}
+                </ListItem>
+              ))}
             </List>
           </DialogBody>
         </Dialog>
