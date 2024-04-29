@@ -18,6 +18,31 @@ router.get("/", async (req, res) => {
 
     // Devolver los detalles de todos los emprendimientos en la respuesta
     res.json({ posts: result });
+  } catch (error) {
+    console.error("Error al obtener emprendimientos:", error);
+    res
+      .status(500)
+      .json({ message: "Ocurrió un error al obtener los emprendimientos." });
+  }
+});
+
+router.get("/:text", async (req, res) => {
+  const { text  } = req.params;
+  try {
+    console.log("entra Emprendimientos Filtrados");
+    console.log("text: " + text);
+    // Ejecutar el procedimiento almacenado para obtener los detalles de todos los emprendimientos
+    const result = await runStoredProcedure("EmprendeTEC_SP_GetFilterPosts", { IN_pattern: text });
+
+    // Verificar si se encontraron datos de emprendimientos
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No se encontraron emprendimientos." });
+    }
+
+    // Devolver los detalles de todos los emprendimientos en la respuesta
+    res.json({ posts: result });
     console.log(result);
   } catch (error) {
     console.error("Error al obtener emprendimientos:", error);
@@ -27,7 +52,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/emprendimiento/:id", async (req, res) => {
   const { id } = req.params;
   try {
     // Ejecutar el procedimiento almacenado para obtener los detalles del emprendimiento solicitado
@@ -76,7 +101,6 @@ router.get("/usuario/:id", async (req, res) => {
 router.get("/imagenes/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    console.log("entraNuevo2: " + id);
     // Ejecutar el procedimiento almacenado para obtener las imagenes del emprendimiento solicitado
     const result = await runStoredProcedure("GetImagesPost", {
       inPostID: id,

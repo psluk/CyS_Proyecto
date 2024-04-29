@@ -117,21 +117,13 @@ router.post("/registro", async (req, res) => {
 
 router.put("/editar-perfil", async (req, res) => {
   // Validate the input
-  console.log("Entra aquí")
   const { givenName, familyName, password, email, image } = req.body;
-  // console.log("GivenName: " + givenName)
-  // console.log("FamilyName: " + familyName)
-  // console.log("Password: " + password)
-  // console.log("Image: " + image)
-  // if (!givenName || !familyName || !email || !password) {
-  //   res.status(400).json({ message: "Faltan parámetros." });
-  //   return;
-  // }
-  try {
-    // Actualizar usuario de la base de datos local
-    const result = await runStoredProcedure("UpdateUser", { IN_email: email, IN_givenName: givenName, IN_familyName: familyName, IN_imageUser: image});
 
-    // Verificar el resultado del procedimiento almacenado
+  try {
+    // Update user from local database
+    const result = await runStoredProcedure("UpdateUser", { IN_email: email, IN_givenName: givenName, IN_familyName: familyName, IN_imageUser: image});
+    
+    // Verify stored procedure result
     if (result === 1) {
       res.json({ message: "Usuario actualizado exitosamente." });
     } else if (result === -1) {
