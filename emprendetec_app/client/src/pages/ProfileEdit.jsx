@@ -9,7 +9,8 @@ import { toast } from "react-toastify";
 const ProfileEdit = () => {
   const navigate = useNavigate();
 
-  const { getUserID } = useSession();
+  const { getUserID, loading } = useSession();
+  const [userID, setUserID] = useState(null);
   const [user, setUser] = useState([])
   const [givenName, setGivenName] = useState('');
   const [familyName, setFamilyName] = useState('');
@@ -19,8 +20,16 @@ const ProfileEdit = () => {
   const [userImage, setUserImage] = useState('/default/perfil.png');
   
   useEffect(() => {
-    fetchUser();
-  }, []);
+    if(userID){
+        fetchUser();
+    }
+  }, [userID]);
+
+  useEffect(() => {
+    if(!loading){
+        setUserID(getUserID());
+    }
+  }, [loading]);
 
   const fetchUser = async () => {
     try {
@@ -71,7 +80,7 @@ const ProfileEdit = () => {
   return (
     <>
       <Helmet>
-        <title>Prueba | EmprendeTEC</title>
+        <title>Editar Perfil | EmprendeTEC</title>
         <link rel="canonical" href="/perfil/editar" />
       </Helmet>
       <Typography variant='h2' color='teal' className="mt-24">Modificar Perfil</Typography>
@@ -83,23 +92,21 @@ const ProfileEdit = () => {
                     className="mb-2 mt-8 w-80 max-w-screen-lg sm:w-96"
                 > */}
                 <div className="mb-4">
-                    <Typography color="gray" className="font-bold">Nombre:</Typography>
                     <Input
                         value={givenName}
+                        label="Nombre"
                         placeholder="Ingrese su nombre"
                         color="teal"
                         onChange={(e) => setGivenName(e.target.value)}
-                        required
                     />
                 </div>
                 <div className="mb-4">
-                    <Typography color="gray" className="font-bold">Apellidos:</Typography>
                     <Input
                         value={familyName}
+                        label="Apellidos"
                         placeholder="Ingrese su apellido"
                         color="teal"
                         onChange={(e) => setFamilyName(e.target.value)}
-                        required
                     />
                 </div>
                 {/* <div className="mb-4">
@@ -116,9 +123,9 @@ const ProfileEdit = () => {
                     <Typography color="gray" className="ml-4">{email}</Typography>
                 </div>
                 <div className="mb-4">
-                    <Typography color="gray" className="font-bold">Contraseña:</Typography>
                     <Input
                         value={password}
+                        label="Contraseña"
                         placeholder="Deje en blanco si no desea cambiar la contraseña"
                         color="teal"
                         type="password"
@@ -126,9 +133,9 @@ const ProfileEdit = () => {
                     />
                 </div>
                 <div className="mb-6">
-                    <Typography color="gray" className="font-bold">Confirma contraseña:</Typography>
                     <Input
                         value={confirmPassword}
+                        label="Confirma contraseña"
                         placeholder="Deje en blanco si no desea cambiar la contraseña"
                         color="teal"
                         type="password"
@@ -148,13 +155,19 @@ const ProfileEdit = () => {
                 <input type="file" id="profileimg" className="hidden" onChange={(e) => setUserImage(URL.createObjectURL(e.target.files[0]))}></input>
             </div>
         </div>
-        <button
+        <Button
+          className="flex m-auto bg-teal-500 hover:bg-teal-700 text-white font-bold px-4"
+          onClick={handleSubmit}
+          >
+            Confirmar cambios
+        </Button>
+        {/* <button
             className="flex m-auto bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded"
             type="button"
             onClick={handleSubmit}
         >
             Confirmar cambios
-        </button>
+        </button> */}
       </div>
     </>
   );
