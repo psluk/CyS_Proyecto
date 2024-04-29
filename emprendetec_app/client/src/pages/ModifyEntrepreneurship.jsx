@@ -19,7 +19,8 @@ import { toast } from "react-toastify";
 import { uploadFilesAndGetDownloadURLs } from "../config/firebase-config.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
-
+import { analytics } from "../config/firebase-config.js";
+import { logEvent } from "firebase/analytics";
 export default function CreateEntrepreneurship() {
   const axios = UseAxios();
   const { getUserEmail } = useSession();
@@ -44,6 +45,7 @@ export default function CreateEntrepreneurship() {
     name: "",
     description: "",
     userEmail: "",
+    location:"",
   });
 
   const fetchPost = async () => {
@@ -159,6 +161,16 @@ export default function CreateEntrepreneurship() {
         .post("/api/emprendimientos/crear", formData)
         .then(() => {
           toast.success("¡Emprendimiento creado exitosamente!");
+          if (analytics) {
+            logEvent(analytics, "update_entrepreneurship", {
+              name: formData.name,
+              description: formData.description,
+              userEmail: formData.userEmail,
+              location: formData.building_number
+                ? `${formData.building_number} - ${formData.location}`
+                : formData.location,
+            });
+          }
         })
         .catch((error) => {
           toast.error(error?.response?.data?.message ?? defaultError);
