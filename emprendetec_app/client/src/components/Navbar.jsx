@@ -60,7 +60,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 flex h-20 w-full justify-center bg-gray-100 px-10 py-4 md:py-3 z-10">
+    <nav className="fixed top-0 flex h-20 w-full justify-center bg-gray-100 px-10 py-4 md:py-3 z-[1001]">
       <div className="flex w-full max-w-7xl flex-row items-center justify-between">
         <Link
           to="/"

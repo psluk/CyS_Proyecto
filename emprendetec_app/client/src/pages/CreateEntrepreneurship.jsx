@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import UseAxios from "../config/customAxios.js";
 import {
   Card,
@@ -9,7 +9,6 @@ import {
   Spinner, Switch, IconButton, Dialog, DialogHeader, DialogBody, List, ListItem
 } from "@material-tailwind/react";
 import {
-  imageRequirements,
   validateImages,
 } from "../../../common/utils/validations";
 import { Helmet } from "react-helmet-async";
@@ -19,9 +18,11 @@ import { uploadFilesAndGetDownloadURLs } from "../config/firebase-config.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { defaultError } from "../utils/ErrorSettings.js";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { MapContainer, Popup, TileLayer } from "react-leaflet";
 import "../styles/leaflet.css";
 import { defaultZoom, tecCoordinates } from "../constants/mapData.js";
+import DraggableMarker from "../components/DraggableMarker.jsx";
+import CustomMapMarker from "../components/CustomMapMarker.js";
 
 export default function CreateEntrepreneurship() {
   const axios = UseAxios();
@@ -41,12 +42,13 @@ export default function CreateEntrepreneurship() {
   const [inPerson, setInPerson] = useState(false);
   const [locations, setLocations] = useState([]);
   const [isSelectingPlace, setIsSelectingPlace] = useState(false);
+  const [isSearchingPlace, setIsSearchingPlace] = useState(false);
+  const mapPopupRef = useRef(null);
 
   const [activeImage, setActiveImage] = useState(
     <FontAwesomeIcon icon={faFile} beat size="2xl" />,
   );
   const [loading, setLoading] = useState(false);
-
   const fileInputRef = useRef();
 
   const handleDragOver = (e) => {
@@ -130,6 +132,7 @@ export default function CreateEntrepreneurship() {
   const handlePlaceSearch = async (e) => {
     e.preventDefault();
     const searchedLocation = formData.location;
+    setIsSearchingPlace(true);
 
     axios.get(`/api/lugares/buscar/${searchedLocation}`).then((response) => {
       const loadedLocations = response.data?.results ?? [];
@@ -153,6 +156,8 @@ export default function CreateEntrepreneurship() {
       }
     }).catch((error) => {
       toast.error(error?.response?.data?.message ?? defaultError);
+    }).finally(() => {
+      setIsSearchingPlace(false);
     });
   }
 
@@ -264,6 +269,7 @@ export default function CreateEntrepreneurship() {
                       label="Presencial"
                       onChange={(e) => setInPerson(e.target.checked)}
                       value={inPerson}
+                      color="teal"
                     />
                     {
                       inPerson && (
@@ -275,16 +281,26 @@ export default function CreateEntrepreneurship() {
                               name="location"
                               required={true}
                               value={formData.location}
-                              onChange={handleInputChange}
+                              onChange={(e) => {
+                                // Close popup if closed
+                                if (mapPopupRef.current) {
+                                  console.log(mapPopupRef.current)
+                                  mapPopupRef.current._closeButton?.click();
+                                }
+                                setFormData({
+                                  ...formData,
+                                  building_number: null,
+                                });
+                                handleInputChange(e);
+                              }}
                               label="Ubicación"
-                              className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
                               onKeyPress={(e) => {
                                 if (e.key === "Enter") {
                                   handlePlaceSearch(e);
                                 }
                               }}
                             />
-                            <IconButton variant="text" onClick={handlePlaceSearch}>
+                            <IconButton variant="text" onClick={handlePlaceSearch} disabled={isSearchingPlace}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </IconButton>
                           </div>
@@ -303,17 +319,30 @@ export default function CreateEntrepreneurship() {
                               />
                               {
                                 formData.latitude && formData.longitude &&
-                                <Marker
+                                <DraggableMarker
                                   position={[formData.latitude, formData.longitude]}
+                                  setPosition={(position) => {
+                                    setFormData({
+                                      ...formData,
+                                      latitude: position.lat,
+                                      longitude: position.lng,
+                                    });
+                                  }}
+                                  icon={CustomMapMarker}
                                 >
-                                  <Popup>
-                                    <span className="font-bold">
-                                      {formData.building_number}
-                                    </span>
-                                    <span className="font-bold px-1">·</span>
+                                  <Popup ref={mapPopupRef}>
+                                    {
+                                      formData.building_number &&
+                                      <>
+                                        <span className="font-bold">
+                                          {formData.building_number}
+                                        </span>
+                                        <span className="font-bold px-1">·</span>
+                                      </>
+                                    }
                                     {formData.location}
                                   </Popup>
-                                </Marker>
+                                </DraggableMarker>
                               }
                             </MapContainer>
                           </div>
@@ -339,17 +368,18 @@ export default function CreateEntrepreneurship() {
           size="xs"
           open={isSelectingPlace}
           handler={() => setIsSelectingPlace(false)}
+          className="max-h-[calc(100vh-5rem)] flex flex-col w-full"
         >
           <DialogHeader className="text-teal-700">
             Seleccionar lugar
           </DialogHeader>
-          <DialogBody className="overflow-y-auto !px-5 !pt-0">
+          <DialogBody className="!px-5 !pt-0 flex flex-col overflow-y-auto">
             <Typography className="text-sm mb-5">Se encontraron {locations.length} resultados durante la
               búsqueda.</Typography>
-            <List className="flex flex-col">
+            <List className="overflow-y-auto">
               {
                 locations.map((location, index) => (
-                  <ListItem key={index} className="grow text-start" onClick={
+                  <ListItem key={index} className="w-full text-start active:p-3" onClick={
                     () => {
                       setFormData({
                         ...formData,
@@ -364,7 +394,8 @@ export default function CreateEntrepreneurship() {
                   >
                     {
                       location.building_number &&
-                      <><span className="font-bold">{location.building_number}</span>
+                      <>
+                        <span className="font-bold">{location.building_number}</span>
                         <span className="font-bold px-1">·</span>
                       </>
                     }

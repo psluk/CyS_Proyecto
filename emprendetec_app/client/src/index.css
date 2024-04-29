@@ -44,3 +44,7 @@ body,
 a {
   @apply transition-colors;
 }
+
+.custom-leaflet-marker {
+  @apply w-6 h-auto drop-shadow-2xl;
+}
