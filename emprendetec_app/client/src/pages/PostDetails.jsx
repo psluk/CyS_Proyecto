@@ -89,10 +89,11 @@ export default function PostDetails() {
   const getImages = () => {
     if (images.length != 0)
       return (
-        <ImageGallery
-          items={images}
-          additionalClass={`style.${image_gallery}`}
-        />
+        <div className="w-full max-w-sm">
+          <ImageGallery
+            items={images}
+          />
+        </div>
       );
     else
       return <img className="mb-2 rounded-2xl" src="/default/no-image.jpeg" />;

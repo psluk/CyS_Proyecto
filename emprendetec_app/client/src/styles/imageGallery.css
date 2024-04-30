@@ -1,0 +1,22 @@
+img.image-gallery-image {
+    @apply aspect-square object-contain;
+}
+
+span.image-gallery-thumbnail-inner, img.image-gallery-thumbnail-image {
+    @apply aspect-square object-cover;
+}
+
+button.image-gallery-thumbnail,
+button.image-gallery-thumbnail.active,
+button.image-gallery-thumbnail:focus {
+    @apply rounded-lg shadow-lg mb-2 overflow-hidden border-teal-100;
+}
+
+button.image-gallery-thumbnail.active,
+button.image-gallery-thumbnail:focus {
+    @apply border-teal-600;
+}
+
+img.image-gallery-image {
+    @apply min-h-96;
+}
