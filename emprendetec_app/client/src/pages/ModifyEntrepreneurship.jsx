@@ -20,7 +20,7 @@ import { validateImages } from "../../../common/utils/validations";
 import { Helmet } from "react-helmet-async";
 import { useSession } from "../context/SessionContext";
 import { toast } from "react-toastify";
-import { uploadFilesAndGetDownloadURLs } from "../config/firebase-config.js";
+import { uploadFilesAndGetDownloadURLs, deleteImageByUrl } from "../config/firebase-config.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { defaultError } from "../utils/ErrorSettings.js";
@@ -33,7 +33,8 @@ import { analytics } from "../config/firebase-config.js";
 import { logEvent } from "firebase/analytics";
 export default function CreateEntrepreneurship() {
   const axios = UseAxios();
-  const { getUserEmail } = useSession();
+  const { getUserEmail, loading} = useSession();
+
   const [formData, setFormData] = useState({
     projectID: 0,
     name: "",
@@ -55,19 +56,21 @@ export default function CreateEntrepreneurship() {
   const [isSearchingPlace, setIsSearchingPlace] = useState(false);
   const mapPopupRef = useRef(null);
   useEffect(() => {
-    fetchPost();
-    fetchImages();
-  },  []);
+    if (!loading) {
+      fetchPost();
+      fetchImages();
+    }
+  },  [loading]);
   
   const [activeImage, setActiveImage] = useState(
     <FontAwesomeIcon icon={faFile} beat size="2xl" />,
   );
-  const [loading, setLoading] = useState(false);
+  const [loading2, setLoading] = useState(false);
   const fileInputRef = useRef();
 
   const fetchPost = async () => {
       try {
-          const response = await axios.get(`/api/emprendimientos/${params.id}`);
+          const response = await axios.get(`/api/emprendimientos/emprendimiento/${params.id}`);
           
           if (response.data && response.data.post && response.data.post.length > 0) {
               setPost(response.data.post[0]);      
@@ -153,18 +156,44 @@ export default function CreateEntrepreneurship() {
     }));
   };
 
+  const arraysEqual = (arr1, arr2) => {
+    if (arr1.length !== arr2.length) return false;
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) return false;
+    }
+    return true;
+  };
+
+  
+  
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
+    var uploadedImageUrls = [];
     setLoading(true);
     if (selectedFiles.length === 0) {
       toast.error("No se han seleccionado imágenes.");
       setLoading(false);
     } else {
-      const uploadedImageUrls =
-        await uploadFilesAndGetDownloadURLs(selectedFiles);
+      const areImagesModified = !arraysEqual(selectedFiles, images);
+      console.log(areImagesModified);
+      if (!areImagesModified) {
+        toast.info("No se han realizado cambios en las imágenes.");
+        uploadedImageUrls = selectedFiles
+      } else {
+        try {
+          for (const imageUrl of images) {
+           await deleteImageByUrl(imageUrl.original);
+          }
+          uploadedImageUrls = await uploadFilesAndGetDownloadURLs(selectedFiles);
+          toast.success("Imágenes actualizadas correctamente.");
+        } catch (error) {
+          toast.error("Error al actualizar las imágenes.");
+        } 
+      }
+      
       formData.images = uploadedImageUrls;
-      console.log("URLs de descarga de las imágenes:", uploadedImageUrls);
-      console.log("Datos del formulario:", formData);
+
       setLoading(false);
       
       axios
@@ -247,7 +276,7 @@ export default function CreateEntrepreneurship() {
       <main className="w-full max-w-7xl space-y-12 px-6">
         <div className="min-h-screen w-full flex-col items-start justify-start bg-white p-2 md:p-2 lg:p-16">
           <div>
-            {loading && (
+            {loading2 && (
               <div className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center bg-black bg-opacity-50">
                 <Spinner color="blue" />
               </div>

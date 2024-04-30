@@ -148,7 +148,6 @@ router.put("/modificar", checkPermissions(['Administrator','Professor','Student'
   try {
     const { projectID, name, description, userEmail, images, location, latitude, longitude } = req.body;
     const imageUrlsString = images.join(',');
-    console.log("projectId: " + projectID + " name: " + name + " description: " + description + " userEmail: " + userEmail + " images: " + images + " location: " + location + " latitude: " + latitude + " longitude: " + longitude); 
     await runStoredProcedure("EmprendeTEC_SP_UpdateEntrepreneurship", {
       IN_projectId: projectID,
       IN_userEmail: userEmail,
@@ -159,7 +158,6 @@ router.put("/modificar", checkPermissions(['Administrator','Professor','Student'
       IN_longitude: longitude,
       IN_images: imageUrlsString
     });
-
     res.status(200).json({ message: "Proyecto modificado correctamente" });
   } catch (error) {
     console.error("Error al modificar el proyecto:", error);
