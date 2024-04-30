@@ -1,10 +1,11 @@
 --------------------------------------------------------------------------
 -- Author:       Jasson Segura Jimenez
 -- Date:         2024-04-11
--- Description:  Creates a new entrepreneurship post
+-- Description:  updates an entrepreneurship post
 --------------------------------------------------------------------------
-CREATE OR ALTER PROCEDURE [dbo].[EmprendeTEC_SP_SaveProject]
+CREATE OR ALTER PROCEDURE [dbo].[EmprendeTEC_SP_UpdateEntrepreneurship]
     -- Parameters
+    @IN_projectID INT,
 	@IN_projectName NVARCHAR(50),
     @IN_description NVARCHAR(255),
     @IN_userEmail NVARCHAR(255),
@@ -22,14 +23,14 @@ BEGIN
 
     BEGIN TRY
         -- VALIDATIONS
-        IF EXISTS
+        IF NOT EXISTS
         (
             SELECT  1
             FROM    [dbo].[Posts]
-            WHERE   [title] = @IN_projectName
+            WHERE   [postId] = @IN_projectID
         )
         BEGIN
-            RAISERROR('Un proyecto con ese nombre ya existe.', 16, 1);
+            RAISERROR('El proyecto que estas tratanto de modificar no existe.', 16, 1);
         END;
 
         DECLARE @userId INT;
@@ -43,45 +44,23 @@ BEGIN
         END;
 
         -- Insert the project into the 'posts' table
-        INSERT INTO [dbo].[Posts]
-        (
-            [userId],
-            [title],
-            [description],
-            [location],
-            [locationX],
-            [locationY],
-            [rating],
-            [timestamp]
-        )
-        VALUES
-        (
-            @userId,
-            @IN_projectName,
-            @IN_description,
-            @IN_location,
-            @IN_longitude,
-            @IN_latitude,          
-            0,
-            GETDATE()
-        );
-
-        -- Get the ID of the inserted project
-		DECLARE @projectId INT;
-		SELECT @projectId = [postId] FROM [dbo].[Posts] WHERE [title] = @IN_projectName;
-			-- Insert the images into the 'postimages' table
+        UPDATE [dbo].[Posts]
+        SET [title] = @IN_projectName,
+            [description] = @IN_description,
+            [location] = @IN_location,
+            [locationX] = @IN_longitude,
+            [locationY] = @IN_latitude
+        WHERE [postId] = @IN_projectID;
 
 		DECLARE @imageTable TABLE (ImageUrl NVARCHAR(255));
 		INSERT INTO @imageTable (ImageUrl)
 		SELECT value FROM STRING_SPLIT(@IN_images, ',');
 
-		INSERT INTO [dbo].[postimages]
-		    (
-				[postId],
-				[imageUrl]        
-			)
-			SELECT @projectId,  ImageUrl FROM @imageTable;
-
+        UPDATE [dbo].[postimages]
+        SET [postId] = @IN_projectID,
+            [imageUrl] = ImageUrl
+        SELECT @projectId,  ImageUrl FROM @imageTable
+        WHERE [postId] = @IN_projectID;
 
         -- COMMIT TRANSACTION
         IF @transactionStarted = 1

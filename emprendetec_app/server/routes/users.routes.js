@@ -7,7 +7,8 @@ import {
   validatePassword,
 } from "../../common/utils/validations.js";
 import { runStoredProcedure } from "../config/database/database-provider.js";
-import admin from "firebase-admin"; // Importa firebase-admin
+import { checkPermissions } from "../sessions/session-provider.js";
+
 
 
 router.get("/:id", async (req, res) => {
@@ -179,7 +180,7 @@ router.put("/editar-perfil", async (req, res) => {
   }
 });
 
-router.get("/detalles", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     // Ejecutar el procedimiento almacenado para obtener los detalles de todos los usuarios
     const result = await runStoredProcedure("GetUserDetails");
@@ -197,30 +198,16 @@ router.get("/detalles", async (req, res) => {
   }
 });
 
-// router.delete("/eliminar/:email", async (req, res) => { 
-//   const { email } = req.params;
-//   console.log(email);
-// });
 
 // Elimina un usuario por su correo electrónico
-router.delete("/eliminar/:email", async (req, res) => {
+router.delete("/eliminar/:email",checkPermissions(['Administrator'], true), async (req, res) => {
   const { email } = req.params;
-  console.log(email);
+
   try {
     
     // Eliminar usuario de la base de datos local
-    const result = await runStoredProcedure("EliminarUsuarios", { IN_email: email});
+    const result = await runStoredProcedure("EmprendeTEC_SP_DeleteUser", { IN_email: email});
 
-    // Verificar el resultado del procedimiento almacenado
-    if (result === 1) {
-      res.json({ message: "Usuario eliminado exitosamente." });
-    } else if (result === -1) {
-      res.status(404).json({ message: "El usuario no existe en la base de datos local." });
-    } else if (result === -2) {
-      res.status(500).json({ message: "Error interno del servidor al eliminar el usuario." });
-    } else {
-      res.status(500).json({ message: "Resultado inesperado del procedimiento almacenado." });
-    }
     console.log("Resultado del procedimiento almacenado:", result);
     // Eliminar usuario de Firebase Authentication
     await firebaseProvider.auth().getUserByEmail(email)
@@ -233,10 +220,11 @@ router.delete("/eliminar/:email", async (req, res) => {
         return;
       });
 
-  } catch (error) {
-    console.error("Error al eliminar usuario:", error);
-    res.status(500).json({ message: "Error interno del servidor." });
-  }
+      res.status(200).json({ message: "Usuario eliminado correctamente" });
+    } catch (error) {
+      console.error("Error al eliminar el usuario:", error);
+      res.status(error?.cause ? 400 : 500).json({ message: error?.cause });
+    }
 });
 
 

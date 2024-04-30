@@ -140,10 +140,32 @@ router.post("/crear", checkPermissions(['Administrator','Professor','Student'], 
     res.status(200).json({ message: "Proyecto guardado correctamente" });
   } catch (error) {
     console.error("Error al guardar el proyecto:", error);
-    res
-      .status(500)
-      .json({ message: "Ocurrió un error al guardar el proyecto" });
+    res.status(error?.cause ? 400 : 500).json({ message: error?.cause });
   }
 });
+
+router.put("/modificar", checkPermissions(['Administrator','Professor','Student'], true), async (req, res) => {
+  try {
+    const { projectID, name, description, userEmail, images, location, latitude, longitude } = req.body;
+    const imageUrlsString = images.join(',');
+    console.log("projectId: " + projectID + " name: " + name + " description: " + description + " userEmail: " + userEmail + " images: " + images + " location: " + location + " latitude: " + latitude + " longitude: " + longitude); 
+    await runStoredProcedure("EmprendeTEC_SP_UpdateEntrepreneurship", {
+      IN_projectId: projectID,
+      IN_userEmail: userEmail,
+      IN_projectName: name,
+      IN_description: description,
+      IN_location: location,
+      IN_latitude: latitude,
+      IN_longitude: longitude,
+      IN_images: imageUrlsString
+    });
+
+    res.status(200).json({ message: "Proyecto modificado correctamente" });
+  } catch (error) {
+    console.error("Error al modificar el proyecto:", error);
+    res.status(error?.cause ? 400 : 500).json({ message: error?.cause });
+  }
+});
+
 
 export default router;

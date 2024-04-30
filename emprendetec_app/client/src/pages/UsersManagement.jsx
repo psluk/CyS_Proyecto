@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import axios from "axios";
+import UseAxios from "../config/customAxios.js";
 import { Avatar } from "@material-tailwind/react";
 import { Button } from "@material-tailwind/react";
 import { Checkbox } from "@material-tailwind/react";
 
 export default function UsersManagement() {
+  const axios = UseAxios();
   const [userDetailsList, setUserDetailsList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortField, setSortField] = useState("");
@@ -18,7 +19,7 @@ export default function UsersManagement() {
 
   const fetchUserDetails = async () => {
     try {
-      const response = await axios.get("/api/usuarios/detalles");
+      const response = await axios.get("/api/usuarios/");
       if (response.data && response.data.users) {
         setUserDetailsList(response.data.users);
       }
@@ -141,7 +142,6 @@ export default function UsersManagement() {
                     color="red"
                     className="col-span-1"
                     onClick={() => {
-                      console.log("Eliminar usuario:", user.Email);
                       handleDeleteUser([user.Email]);
                     }}
                   >
