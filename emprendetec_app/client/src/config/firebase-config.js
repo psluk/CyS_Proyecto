@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 // The web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDtTnHyVuGu3OmlWb2WDiruFZSAu4bLuHA",
@@ -24,9 +24,9 @@ if (
 }
 const uploadFilesAndGetDownloadURLs = async (files) => {
   const downloadURLs = [];
-
+  const timestamp = Date.now();
   for (const file of files) {
-    const storageRef = ref(storage, `images/${file.name}`);
+    const storageRef = ref(storage, `images/${file.name}-${timestamp}`);
     try {
       await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(storageRef);
@@ -39,4 +39,19 @@ const uploadFilesAndGetDownloadURLs = async (files) => {
   return downloadURLs;
 };
 
-export { storage, uploadFilesAndGetDownloadURLs, analytics };
+const deleteImageByUrl = async (imageUrl) => {
+  try {
+    // Obtén una referencia al archivo en Firebase Storage usando su URL
+    const storageRef = ref(storage, imageUrl);
+
+    // Elimina el archivo de Firebase Storage
+    await deleteObject(storageRef);
+
+    console.log(`Imagen ${imageUrl} eliminada correctamente de Firebase Storage.`);
+  } catch (error) {
+    console.error('Error al eliminar la imagen de Firebase Storage:', error);
+    throw error;
+  }
+};
+
+export { storage, uploadFilesAndGetDownloadURLs, deleteImageByUrl, analytics };

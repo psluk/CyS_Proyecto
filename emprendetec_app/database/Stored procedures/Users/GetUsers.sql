@@ -4,7 +4,7 @@
 -- Description:  Gets the details of a user
 --------------------------------------------------------------------------
 
-CREATE OR ALTER PROCEDURE  [dbo].[GetUserDetails]
+CREATE OR ALTER PROCEDURE [dbo].[GetUserDetails]
 AS
 BEGIN
 	DECLARE @ErrorNumber INT, @ErrorSeverity INT, @ErrorState INT, @Message VARCHAR(200);
@@ -12,8 +12,10 @@ BEGIN
 	BEGIN TRY
 		SELECT u.givenName + ' ' + u.familyName AS FullName,
 			   u.signUpTimestamp AS RegistrationDate,
-			   u.rating AS Score
+			   u.rating AS Score,
+               u.email AS Email
 		FROM Users u
+        WHERE u.userTypeId != 1; -- Select only users with userTypeId different from 1
 	END TRY
     BEGIN CATCH
 
