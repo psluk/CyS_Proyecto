@@ -67,6 +67,7 @@ async function runStoredProcedure(procedureName, params = {}) {
       throw new Error("SQL validation error", { cause: errorMessage?.at(0) });
     } else {
       // If the error was not raised manually, then it is an internal error
+      console.error(error);
       throw new Error("Internal SQL error", { cause: undefined });
     }
   }
