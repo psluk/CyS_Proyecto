@@ -198,6 +198,27 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/top-usuarios/usuarios", async (req, res) => {
+  try {
+    // Ejecutar el procedimiento almacenado para obtener los detalles de todos los usuarios
+    const result = await runStoredProcedure("EmprendeTEC_SP_TopUsers");
+
+    // Verificar si se encontraron datos de usuario
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No se encontraron detalles de ningún usuario." });
+    }
+
+    // Devolver los detalles de todos los usuarios en la respuesta
+    res.json({ users: result });
+  } catch (error) {
+    console.error("Error al obtener detalles de los usuarios:", error);
+    res.status(500).json({
+      message: "Ocurrió un error al obtener detalles de los usuarios.",
+    });
+  }
+});
 
 // Elimina un usuario por su correo electrónico
 router.delete("/eliminar/:email",checkPermissions(['Administrator'], true), async (req, res) => {
