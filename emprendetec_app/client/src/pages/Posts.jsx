@@ -59,7 +59,14 @@ export default function Emprendimientos() {
         <div className="flex flex-col-reverse md:flex-row min-h-screen w-full items-start justify-start bg-white">
           {/* EMPRENDIMIENTOS */}
           <div className="w-full">
-            <h1 className="text-3xl font-bold mb-8 text-teal-600">Últimos emprendimientos</h1>
+            <div className="flex flex-col gap-2 md:flex-row md:justify-between">
+              <h1 className="text-3xl font-bold mb-8 text-teal-600">Listado de emprendimientos</h1>
+              <Link to="/emprendimientos/mapa">
+                <Button color="blue">
+                  Ver mapa
+                </Button>
+              </Link>
+            </div>
             <div className="flex flex-col-reverse md:flex-row min-h-screen w-full items-start justify-start bg-white">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {postsList.map(post => (

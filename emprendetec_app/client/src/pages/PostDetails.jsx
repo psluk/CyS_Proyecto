@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import UseAxios from "../config/customAxios.js";
 import { useParams } from 'react-router-dom';
@@ -9,6 +9,10 @@ import { useSession } from "../context/SessionContext";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { analytics } from "../config/firebase-config";
 import { logEvent } from "firebase/analytics";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import customMapMarker from "../components/CustomMapMarker.js";
+import "../styles/imageGallery.css";
+
 export default function PostDetails() {
   const axios = UseAxios();
   const { getUserID } = useSession();
@@ -16,12 +20,22 @@ export default function PostDetails() {
   const [score, setScore] = useState(1);
   const [images, setImages] = useState([]);
   const params = useParams();
+  const markerRef = useRef(null)
 
   useEffect(() => {
     setScore(post.Score);
     fetchPost();
     fetchImages();
   }, []);
+
+  useEffect(() => {
+    if (post.locationX !== null && post.locationY !== null && post.locationX !== undefined && post.locationY !== undefined) {
+      const marker = markerRef.current
+      if (marker) {
+        marker.openPopup();
+      }
+    }
+  }, [post])
 
   const fetchPost = async () => {
     try {
@@ -99,7 +113,7 @@ export default function PostDetails() {
         <link rel="canonical" href="/emprendimientos/:id" />
       </Helmet>
       <main className="w-full max-w-7xl space-y-16 px-10">
-        <div className="flex flex-col-reverse md:flex-row md:min-h-screen w-full items-start justify-start bg-white">
+        <div className="flex flex-col-reverse md:flex-row w-full items-start justify-start bg-white">
           <div>{getImages()}</div>
           <div className="w-full mb-5 md:ml-16">
             <h1 className="text-3xl font-bold">{post && post.Title}</h1>
@@ -108,14 +122,38 @@ export default function PostDetails() {
             </Link>
             {getRating()}
             <p className="mt-8">{post && post.DescriptionPost}</p>
+            {post.locationX !== null && post.locationY !== null && post.locationX !== undefined && post.locationY !== undefined &&
+              <div className="flex flex-col w-full">
+                <h1 className="text-3xl font-bold mt-8 mb-4 text-teal-600 w-full">Dónde se ubica</h1>
+                <div
+                  className="w-full overflow-hidden md:rounded-xl border-2 border-gray-300 [&>.leaflet-container]:h-[calc(100vh-15rem)] [&>.leaflet-container]:min-h-[30rem]">
+                  <MapContainer
+                    center={[post.locationY, post.locationX]}
+                    zoom={17}
+                    scrollWheelZoom={true}
+                    className={"h-full w-full"}
+                  >
+                    <TileLayer
+                      attribution={`&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors`}
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker
+                      position={[post.locationY, post.locationX]}
+                      icon={customMapMarker}
+                      ref={markerRef}
+                    >
+                      {post.location && (
+                        <Popup>
+                          {post.location}
+                        </Popup>
+                      )}
+                    </Marker>
+                  </MapContainer>
+                </div>
+              </div>}
           </div>
         </div>
       </main>
     </>
   );
 }
-
-const image_gallery = {
-  width: "12",
-  height: "12",
-};

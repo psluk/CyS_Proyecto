@@ -19,6 +19,7 @@ import { ThemeProvider } from "@material-tailwind/react";
 import { useSession } from "./context/SessionContext";
 import LoaderDialog from "./components/LoaderDialog";
 import VerifyEmail from "./components/VerifyEmail";
+import PostMap from "./pages/PostMap.jsx";
 
 export default function App() {
   const emprendeTecTheme = {};
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="/perfil/editar" element={<ProfileEdit />} /> 
         <Route path="/usuario/:id" element={<ProfileUser />} /> 
         <Route path="/emprendimientos" element={<Posts />} />
+        <Route path="/emprendimientos/mapa" element={<PostMap />} />
         <Route path="/emprendimientos/:id" element={<PostDetails />} />
         <Route path="/emprendimientos/ModifyEntrepreneurship/:id" element={<ModifyEntrepreneurship />} />
       </Routes>
