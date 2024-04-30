@@ -60,9 +60,6 @@ export default function Home() {
     );
   };
 
-  const handleClick = () => {
-    console.log(entrepreneursList);
-  };
   return (
     <>
       <Helmet>
