@@ -42,7 +42,7 @@ export default function App() {
         <Route path="/emprendimientos" element={<Posts />} />
         <Route path="/emprendimientos/mapa" element={<PostMap />} />
         <Route path="/emprendimientos/:id" element={<PostDetails />} />
-        <Route path="/emprendimientos/ModifyEntrepreneurship/:id" element={<ModifyEntrepreneurship />} />
+        <Route path="/emprendimientos/modificar/:id" element={<ModifyEntrepreneurship />} />
       </Routes>
       <ToastContainer
         position="bottom-left"

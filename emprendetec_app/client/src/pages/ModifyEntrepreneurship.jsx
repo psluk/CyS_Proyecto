@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import UseAxios from "../config/customAxios.js";
 import {
@@ -20,7 +20,10 @@ import { validateImages } from "../../../common/utils/validations";
 import { Helmet } from "react-helmet-async";
 import { useSession } from "../context/SessionContext";
 import { toast } from "react-toastify";
-import { uploadFilesAndGetDownloadURLs, deleteImageByUrl } from "../config/firebase-config.js";
+import {
+  uploadFilesAndGetDownloadURLs,
+  deleteImageByUrl,
+} from "../config/firebase-config.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { defaultError } from "../utils/ErrorSettings.js";
@@ -33,7 +36,7 @@ import { analytics } from "../config/firebase-config.js";
 import { logEvent } from "firebase/analytics";
 export default function CreateEntrepreneurship() {
   const axios = UseAxios();
-  const { getUserEmail, loading} = useSession();
+  const { getUserEmail, loading } = useSession();
 
   const [formData, setFormData] = useState({
     projectID: 0,
@@ -47,7 +50,7 @@ export default function CreateEntrepreneurship() {
   });
   const [post, setPost] = useState([]);
   const [images, setImages] = useState([]);
-  const params = useParams()
+  const params = useParams();
   const [selectedImages, setSelectedImagesURL] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [inPerson, setInPerson] = useState(false);
@@ -60,8 +63,8 @@ export default function CreateEntrepreneurship() {
       fetchPost();
       fetchImages();
     }
-  },  [loading]);
-  
+  }, [loading]);
+
   const [activeImage, setActiveImage] = useState(
     <FontAwesomeIcon icon={faFile} beat size="2xl" />,
   );
@@ -69,34 +72,46 @@ export default function CreateEntrepreneurship() {
   const fileInputRef = useRef();
 
   const fetchPost = async () => {
-      try {
-          const response = await axios.get(`/api/emprendimientos/emprendimiento/${params.id}`);
-          
-          if (response.data && response.data.post && response.data.post.length > 0) {
-              setPost(response.data.post[0]);      
-          }
-      } catch (error) {
-          console.error("Error al obtener el emprendimiento:", error);
+    try {
+      const response = await axios.get(
+        `/api/emprendimientos/emprendimiento/${params.id}`,
+      );
+
+      if (
+        response.data &&
+        response.data.post &&
+        response.data.post.length > 0
+      ) {
+        setPost(response.data.post[0]);
       }
+    } catch (error) {
+      console.error("Error al obtener el emprendimiento:", error);
+    }
   };
   const fetchImages = async () => {
     try {
-        const response = await axios.get(`/api/emprendimientos/imagenes/${params.id}`);
-        
-        if (response.data && response.data.images && response.data.images.length > 0) {
-            const imagesArray = [];
-            for (let i = 0; i < response.data.images.length; i++) {
-                if (i === 0) {
-                  setActiveImage(response.data.images[i].original);
-                }
-                imagesArray.push(response.data.images[i].original);
-              }      
-            setImages(response.data.images);
-            setSelectedImagesURL(imagesArray);
-            setSelectedFiles(response.data.images);
+      const response = await axios.get(
+        `/api/emprendimientos/imagenes/${params.id}`,
+      );
+
+      if (
+        response.data &&
+        response.data.images &&
+        response.data.images.length > 0
+      ) {
+        const imagesArray = [];
+        for (let i = 0; i < response.data.images.length; i++) {
+          if (i === 0) {
+            setActiveImage(response.data.images[i].original);
+          }
+          imagesArray.push(response.data.images[i].original);
         }
+        setImages(response.data.images);
+        setSelectedImagesURL(imagesArray);
+        setSelectedFiles(response.data.images);
+      }
     } catch (error) {
-        console.error("Error al obtener las imagenes:", error);
+      console.error("Error al obtener las imagenes:", error);
     }
   };
 
@@ -164,9 +179,6 @@ export default function CreateEntrepreneurship() {
     return true;
   };
 
-  
-  
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
     var uploadedImageUrls = [];
@@ -176,26 +188,26 @@ export default function CreateEntrepreneurship() {
       setLoading(false);
     } else {
       const areImagesModified = !arraysEqual(selectedFiles, images);
-      console.log(areImagesModified);
       if (!areImagesModified) {
         toast.info("No se han realizado cambios en las imágenes.");
-        uploadedImageUrls = selectedFiles
+        uploadedImageUrls = selectedFiles;
       } else {
         try {
           for (const imageUrl of images) {
-           await deleteImageByUrl(imageUrl.original);
+            await deleteImageByUrl(imageUrl.original);
           }
-          uploadedImageUrls = await uploadFilesAndGetDownloadURLs(selectedFiles);
+          uploadedImageUrls =
+            await uploadFilesAndGetDownloadURLs(selectedFiles);
           toast.success("Imágenes actualizadas correctamente.");
         } catch (error) {
           toast.error("Error al actualizar las imágenes.");
-        } 
+        }
       }
-      
+
       formData.images = uploadedImageUrls;
 
       setLoading(false);
-      
+
       axios
         .put("/api/emprendimientos/modificar", formData)
         .then(() => {
@@ -274,7 +286,7 @@ export default function CreateEntrepreneurship() {
         <link rel="canonical" href="/emprendimientos/crear" />
       </Helmet>
       <main className="w-full max-w-7xl space-y-12 px-6">
-        <div className="min-h-screen w-full flex-col items-start justify-start bg-white p-2 md:p-2 lg:p-16">
+        <div className="flex w-full flex-col items-center justify-start bg-white p-2 md:p-4 lg:p-6">
           <div>
             {loading2 && (
               <div className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center bg-black bg-opacity-50">
@@ -282,15 +294,22 @@ export default function CreateEntrepreneurship() {
               </div>
             )}
             {
-              <Card color="transparent" shadow={false}>
-                <Typography variant="h4" color="blue-gray">
+              <Card
+                color="transparent"
+                shadow={false}
+                className="max-w-screen-sm"
+              >
+                <h1 className="mb-4 text-center text-xl font-semibold text-teal-600 md:text-2xl lg:text-3xl">
                   Modificar emprendimiento
+                </h1>
+                <Typography
+                  color="gray"
+                  className="mb-5 text-center font-normal"
+                >
+                  Por favor, proporcioná tus datos para la modificación de un
+                  emprendimiento.
                 </Typography>
-                <Typography color="gray" className="mb-5 mt-1 font-normal">
-                  Encantado de conocerte. Por favor, proporciona tus datos para
-                  la modificación de un emprendimiento.
-                </Typography>
-                <div className="w-12/12 md:w-12/12 mb-5 grid gap-4 object-center lg:w-6/12 ">
+                <div className="mb-5 grid w-full gap-4 object-center">
                   <div className="flex items-center justify-center ">
                     {typeof activeImage === "string" ? (
                       <img
@@ -316,7 +335,7 @@ export default function CreateEntrepreneurship() {
                   </div>
                 </div>
                 <div
-                  className="dropzone flex h-20 cursor-pointer items-center justify-center rounded-md border-2 border-black shadow-2xl  lg:w-6/12"
+                  className="dropzone flex min-h-20 w-full cursor-pointer items-center justify-center rounded-xl border border-blue-gray-300/50 bg-blue-gray-50 px-4 shadow-lg"
                   onDragOver={handleDragOver}
                   onDrop={handleDrop}
                   onClick={handleClick}
@@ -331,15 +350,11 @@ export default function CreateEntrepreneurship() {
                     style={{ display: "none" }}
                   />
                   <p>
-                    Arrastra y suelta tus imágenes aquí, o haz clic para
-                    seleccionar imágenes
+                    Arrastrá y soltá tus imágenes aquí, o hacé clic para
+                    seleccionar imágenes.
                   </p>
                 </div>
-
-                <form
-                  onSubmit={handleSubmit}
-                  className="mb-2 mt-8 w-80 max-w-screen-lg sm:w-96"
-                >
+                <form onSubmit={handleSubmit} className="mb-2 mt-8 w-full">
                   <div className="mb-1 flex flex-col gap-6">
                     <Input
                       size="lg"
@@ -349,7 +364,7 @@ export default function CreateEntrepreneurship() {
                       required={true}
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder= {post.Title}
+                      placeholder={post.Title}
                       label="Nombre del emprendimiento"
                     />
                     <Textarea
@@ -378,7 +393,6 @@ export default function CreateEntrepreneurship() {
                             onChange={(e) => {
                               // Close popup if closed
                               if (mapPopupRef.current) {
-                                console.log(mapPopupRef.current);
                                 mapPopupRef.current._closeButton?.click();
                               }
                               setFormData({

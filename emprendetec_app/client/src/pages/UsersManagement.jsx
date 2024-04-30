@@ -107,7 +107,6 @@ export default function UsersManagement() {
                 color="red"
                 className="col-span-1"
                 onClick={() => {
-                  console.log("Usuarios seleccionados:", selectedUsers);
                   handleDeleteUser(selectedUsers);
                 }}
               >

@@ -38,7 +38,6 @@ export default function Login() {
         navigate("/");
       })
       .catch((error) => {
-        console.log(error.code);
         const errorCode = error.code;
         let message = defaultError;
 
@@ -118,14 +117,14 @@ export default function Login() {
 
   return (
     <>
-    <Helmet>
+      <Helmet>
         <title>Iniciar sesión | Emprendetec</title>
         <link rel="canonical" href="/iniciar-sesion" />
         <meta
           name="description"
           content="Inicia sesión en la plataforma de Emprendetec para acceder a los recursos y servicios disponibles."
         />
-    </Helmet>
+      </Helmet>
       <main className="w-full max-w-7xl space-y-16 px-10">
         <h1 className="text-center font-sans text-2xl font-bold text-teal-900 sm:text-3xl lg:text-5xl">
           Inicio de sesión

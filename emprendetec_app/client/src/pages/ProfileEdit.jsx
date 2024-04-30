@@ -101,18 +101,14 @@ const ProfileEdit = () => {
 
   const getImage = async () => {
     if (file) {
-      const uploadedImageUrls = await uploadFilesAndGetDownloadURLs([file]);
-      console.log("uploading image: " + uploadedImageUrls[0])
-      return uploadedImageUrls[0];
+      const uploadedImageUrls = await uploadFilesAndGetDownloadURLs([file]);      return uploadedImageUrls[0];
     }
     else {
       return null;
     }
   }
 
-  const updateUser = async (e) => {
-    console.log("Handle Submit")
-    e.preventDefault();
+  const updateUser = async (e) => {    e.preventDefault();
     try {
       if (givenName === '' || familyName === ''){
         toast.error("El nombre y apellido no pueden quedar vacíos");
@@ -123,9 +119,7 @@ const ProfileEdit = () => {
         return -1;
       }
       const uploadedImageUrl = await getImage();
-      const response = axios.put("/api/usuarios/editar-perfil", { email:email, givenName: givenName, familyName: familyName, password: password, image: uploadedImageUrl});
-      console.log("Respuesta: " + response.data);
-      return 1;
+      const response = axios.put("/api/usuarios/editar-perfil", { email:email, givenName: givenName, familyName: familyName, password: password, image: uploadedImageUrl});      return 1;
     } catch (error) {
       console.error("Error con los datos:", error);
       return -1;
@@ -144,11 +138,11 @@ const ProfileEdit = () => {
   return (
     <>
       <Helmet>
-        <title>Modificar Perfil | EmprendeTEC</title>
+        <title>Modificar perfil | EmprendeTEC</title>
         <link rel="canonical" href="/perfil/editar" />
       </Helmet>
       <main className="w-full max-w-7xl px-10">
-        <Typography variant='h2' color='teal'>Modificar Perfil</Typography>
+        <Typography variant='h2' color='teal'>Modificar perfil</Typography>
         <div className="md:w-2/3 shadow rounded mb-3 p-5">
           <div className="flex justify-between">
               <div className="w-1/2">
@@ -156,7 +150,7 @@ const ProfileEdit = () => {
                       <Input
                           value={givenName}
                           label="Nombre"
-                          placeholder="Ingrese su nombre"
+                          placeholder="Ingresá tu nombre"
                           color="teal"
                           onChange={(e) => setGivenName(e.target.value)}
                       />
@@ -165,7 +159,7 @@ const ProfileEdit = () => {
                       <Input
                           value={familyName}
                           label="Apellidos"
-                          placeholder="Ingrese su apellido"
+                          placeholder="Ingresá tu apellido"
                           color="teal"
                           onChange={(e) => setFamilyName(e.target.value)}
                       />
@@ -179,7 +173,7 @@ const ProfileEdit = () => {
                           value={password}
                           name="password"
                           label="Contraseña"
-                          placeholder="Deje en blanco si no desea cambiar la contraseña"
+                          placeholder="Dejar en blanco para no cambiar"
                           color="teal"
                           type="password"
                           onChange={handlePasswordChange}
@@ -208,8 +202,8 @@ const ProfileEdit = () => {
                       <Input
                           value={confirmPassword}
                           name="passwordConfirmation"
-                          label="Confirma contraseña"
-                          placeholder="Deje en blanco si no desea cambiar la contraseña"
+                          label="Confirmar contraseña"
+                          placeholder="Confirmá tu contraseña"
                           color="teal"
                           type="password"
                           onChange={(e) => setConfirmPassword(e.target.value)}

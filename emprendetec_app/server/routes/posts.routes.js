@@ -27,12 +27,14 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:text", async (req, res) => {
-  const { text  } = req.params;
+  const { text } = req.params;
   try {
     console.log("entra Emprendimientos Filtrados");
     console.log("text: " + text);
     // Ejecutar el procedimiento almacenado para obtener los detalles de todos los emprendimientos
-    const result = await runStoredProcedure("EmprendeTEC_SP_GetFilterPosts", { IN_pattern: text });
+    const result = await runStoredProcedure("EmprendeTEC_SP_GetFilterPosts", {
+      IN_pattern: text,
+    });
 
     // Verificar si se encontraron datos de emprendimientos
     if (result.length === 0) {
@@ -80,7 +82,7 @@ router.get("/usuario/:id", async (req, res) => {
   const { id } = req.params;
   try {
     // Ejecutar el procedimiento almacenado para obtener los emprendimientos de un usuario
-    const result = await runStoredProcedure("GetPostsUser", {inUserID: id});
+    const result = await runStoredProcedure("GetPostsUser", { inUserID: id });
 
     // Verificar si se encontraron datos de los emprendimientos del usuario
     if (result.length === 0) {
@@ -122,48 +124,72 @@ router.get("/imagenes/:id", async (req, res) => {
   }
 });
 
-router.post("/crear", checkPermissions(['Administrator','Professor','Student'], true), async (req, res) => {
-  try {
-    const { name, description, userEmail, images, location, latitude, longitude } = req.body;
-    const imageUrlsString = images.join(',');
+router.post(
+  "/crear",
+  checkPermissions(["Administrator", "Professor", "Student"], true),
+  async (req, res) => {
+    try {
+      const {
+        name,
+        description,
+        userEmail,
+        images,
+        location,
+        latitude,
+        longitude,
+      } = req.body;
+      const imageUrlsString = images.join(",");
 
-    await runStoredProcedure("EmprendeTEC_SP_SaveProject", {
-      IN_userEmail: userEmail,
-      IN_projectName: name,
-      IN_description: description,
-      IN_location: location,
-      IN_latitude: latitude,
-      IN_longitude: longitude,
-      IN_images: imageUrlsString
-    });
+      await runStoredProcedure("EmprendeTEC_SP_SaveProject", {
+        IN_userEmail: userEmail,
+        IN_projectName: name,
+        IN_description: description,
+        IN_location: location,
+        IN_latitude: latitude,
+        IN_longitude: longitude,
+        IN_images: imageUrlsString,
+      });
 
-    res.status(200).json({ message: "Proyecto guardado correctamente" });
-  } catch (error) {
-    console.error("Error al guardar el proyecto:", error);
-    res.status(error?.cause ? 400 : 500).json({ message: error?.cause });
+      res.status(200).json({ message: "Proyecto guardado correctamente" });
+    } catch (error) {
+      console.error("Error al guardar el proyecto:", error);
+      res.status(error?.cause ? 400 : 500).json({ message: error?.cause });
+    }
   }
-});
+);
 
-router.put("/modificar", checkPermissions(['Administrator','Professor','Student'], true), async (req, res) => {
-  try {
-    const { projectID, name, description, userEmail, images, location, latitude, longitude } = req.body;
-    const imageUrlsString = images.join(',');
-    await runStoredProcedure("EmprendeTEC_SP_UpdateEntrepreneurship", {
-      IN_projectId: projectID,
-      IN_userEmail: userEmail,
-      IN_projectName: name,
-      IN_description: description,
-      IN_location: location,
-      IN_latitude: latitude,
-      IN_longitude: longitude,
-      IN_images: imageUrlsString
-    });
-    res.status(200).json({ message: "Proyecto modificado correctamente" });
-  } catch (error) {
-    console.error("Error al modificar el proyecto:", error);
-    res.status(error?.cause ? 400 : 500).json({ message: error?.cause });
+router.put(
+  "/modificar",
+  checkPermissions(["Administrator", "Professor", "Student"], true),
+  async (req, res) => {
+    try {
+      const {
+        projectID,
+        name,
+        description,
+        userEmail,
+        images,
+        location,
+        latitude,
+        longitude,
+      } = req.body;
+      const imageUrlsString = images.join(",");
+      await runStoredProcedure("EmprendeTEC_SP_UpdateEntrepreneurship", {
+        IN_projectId: projectID,
+        IN_userEmail: userEmail,
+        IN_projectName: name,
+        IN_description: description,
+        IN_location: location,
+        IN_latitude: latitude,
+        IN_longitude: longitude,
+        IN_images: imageUrlsString,
+      });
+      res.status(200).json({ message: "Proyecto modificado correctamente" });
+    } catch (error) {
+      console.error("Error al modificar el proyecto:", error);
+      res.status(error?.cause ? 400 : 500).json({ message: error?.cause });
+    }
   }
-});
-
+);
 
 export default router;

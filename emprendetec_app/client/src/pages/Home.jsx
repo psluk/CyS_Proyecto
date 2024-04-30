@@ -5,8 +5,13 @@ import { defaultError } from "../utils/ErrorSettings";
 import { Helmet } from "react-helmet-async";
 import { Button, Input, Spinner } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faNetworkWired } from "@fortawesome/free-solid-svg-icons";
+import {
+  faNetworkWired,
+  faSquarePollVertical,
+  faStar,
+} from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+
 export default function Home() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -55,7 +60,7 @@ export default function Home() {
       <img
         src={post.ImagePost ? post.ImagePost : "/default/no-image.jpeg"}
         alt={post.ImagePost ? post.Title : "No image available"}
-        className="aspect-square rounded-lg object-fill w-full h-auto"
+        className="aspect-square h-auto w-full rounded-lg object-fill"
       />
     );
   };
@@ -67,17 +72,27 @@ export default function Home() {
         <link rel="canonical" href="/" />
       </Helmet>
       <main className="relative w-full max-w-7xl space-y-10 px-10">
-        <div className="text-xl">
-          <p className="text-red-600">
-            ¿Eres un emprendedor? Llena nuestra encuesta y ayudanos a mejorar:
+        <div className="flex w-full flex-row items-center gap-3 rounded-xl bg-gray-200 p-5 text-lg shadow-lg md:text-xl">
+          <FontAwesomeIcon
+            icon={faSquarePollVertical}
+            className="size-16 text-teal-500 drop-shadow-md"
+          />
+          <p className="text-red-800">
+            ¿Sos un emprendedor? Llená nuestra encuesta y ayudanos a mejorar:{" "}
+            <Link
+              to="https://forms.gle/EDSANh3JFMzartuD9"
+              target="_blank"
+              referrerPolicy="no-referrer"
+              className="mx-auto mt-2 flex justify-center md:mt-0 md:inline"
+            >
+              <Button
+                className="mx-auto animate-pulse md:me-0 md:ms-2"
+                color="teal"
+              >
+                Ver encuesta
+              </Button>
+            </Link>
           </p>
-          <Link
-            to="https://forms.gle/EDSANh3JFMzartuD9"
-            className="text-teal-600"
-            target="_blank"
-          >
-            https://forms.gle/EDSANh3JFMzartuD9
-          </Link>
         </div>
         {loading ? (
           <div className="h-full w-full ">
@@ -87,9 +102,9 @@ export default function Home() {
           <div className="space-y-10">
             {postsList.length > 0 && (
               <div className="space-y-6">
-                <h2 className="text-center font-sans text-3xl font-bold text-teal-900 sm:text-4xl lg:text-5xl">
-                  Mira los emprendimientos más destacados
-                </h2>
+                <h1 className="text-center font-sans text-xl font-bold text-teal-900 sm:text-2xl md:text-start lg:text-3xl">
+                  Emprendimientos más destacados
+                </h1>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {postsList.map((post) => (
                     <div key={post.ID} className="rounded-lg bg-gray-100 p-4">
@@ -127,9 +142,9 @@ export default function Home() {
             )}
             {entrepreneursList.length > 0 && (
               <div className="space-y-6">
-                <h2 className="text-center font-sans text-3xl font-bold text-teal-900 sm:text-4xl lg:text-5xl">
-                  Mira los emprendedores más destacados.
-                </h2>
+                <h1 className="text-center font-sans text-xl font-bold text-teal-900 sm:text-2xl md:text-start lg:text-3xl">
+                  Emprendedores más destacados
+                </h1>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {entrepreneursList.map((entrepreneur) => (
                     <div
@@ -144,7 +159,7 @@ export default function Home() {
                               : "/default/no-image.jpeg"
                           }
                           alt={`${entrepreneur.givenName} ${entrepreneur.familyName}`}
-                          className="aspect-square rounded-lg object-fill w-full h-auto"
+                          className="aspect-square h-auto w-full rounded-lg object-fill"
                         />
                         <div className="flex items-center justify-between">
                           <h3 className="text-lg font-medium">

@@ -28,7 +28,7 @@ export default function Navbar() {
       userTypes: ["Administrator"],
     },
     {
-      label: "Mi Perfil",
+      label: "Mi perfil",
       path: "/perfil",
       userTypes: ["Administrator", "Professor", "Student"],
     },

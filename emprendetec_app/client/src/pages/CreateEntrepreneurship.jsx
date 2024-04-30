@@ -204,7 +204,7 @@ export default function CreateEntrepreneurship() {
         <link rel="canonical" href="/emprendimientos/crear" />
       </Helmet>
       <main className="w-full max-w-7xl space-y-12 px-6">
-        <div className="min-h-screen w-full flex-col items-start justify-start bg-white p-2 md:p-2 lg:p-16">
+        <div className="flex w-full flex-col items-center justify-start bg-white p-2 md:p-4 lg:p-6">
           <div>
             {loading && (
               <div className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center bg-black bg-opacity-50">
@@ -212,15 +212,22 @@ export default function CreateEntrepreneurship() {
               </div>
             )}
             {
-              <Card color="transparent" shadow={false}>
-                <Typography variant="h4" color="blue-gray">
+              <Card
+                color="transparent"
+                shadow={false}
+                className="max-w-screen-sm"
+              >
+                <h1 className="mb-4 text-center text-xl font-semibold text-teal-600 md:text-2xl lg:text-3xl">
                   Publicar emprendimiento
-                </Typography>
-                <Typography color="gray" className="mb-5 mt-1 font-normal">
-                  Encantado de conocerte. Por favor, proporciona tus datos para
+                </h1>
+                <Typography
+                  color="gray"
+                  className="mb-5 text-center font-normal"
+                >
+                  Encantado de conocerte. Por favor, proporcioná tus datos para
                   la creación de un emprendimiento.
                 </Typography>
-                <div className="w-12/12 md:w-12/12 mb-5 grid gap-4 object-center lg:w-6/12 ">
+                <div className="mb-5 grid w-full gap-4 object-center">
                   <div className="flex items-center justify-center ">
                     {typeof activeImage === "string" ? (
                       <img
@@ -246,7 +253,7 @@ export default function CreateEntrepreneurship() {
                   </div>
                 </div>
                 <div
-                  className="dropzone flex h-20 cursor-pointer items-center justify-center rounded-md border-2 border-black shadow-2xl  lg:w-6/12"
+                  className="dropzone flex min-h-20 w-full cursor-pointer items-center justify-center rounded-xl border border-blue-gray-300/50 bg-blue-gray-50 px-4 shadow-lg"
                   onDragOver={handleDragOver}
                   onDrop={handleDrop}
                   onClick={handleClick}
@@ -261,15 +268,11 @@ export default function CreateEntrepreneurship() {
                     style={{ display: "none" }}
                   />
                   <p>
-                    Arrastra y suelta tus imágenes aquí, o haz clic para
-                    seleccionar imágenes
+                    Arrastrá y soltá tus imágenes aquí, o hacé clic para
+                    seleccionar imágenes.
                   </p>
                 </div>
-
-                <form
-                  onSubmit={handleSubmit}
-                  className="mb-2 mt-8 w-80 max-w-screen-lg sm:w-96"
-                >
+                <form onSubmit={handleSubmit} className="mb-2 mt-8 w-full">
                   <div className="mb-1 flex flex-col gap-6">
                     <Input
                       size="lg"
@@ -307,7 +310,6 @@ export default function CreateEntrepreneurship() {
                             onChange={(e) => {
                               // Close popup if closed
                               if (mapPopupRef.current) {
-                                console.log(mapPopupRef.current);
                                 mapPopupRef.current._closeButton?.click();
                               }
                               setFormData({
