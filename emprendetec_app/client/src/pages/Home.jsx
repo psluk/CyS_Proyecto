@@ -55,7 +55,7 @@ export default function Home() {
       <img
         src={post.ImagePost ? post.ImagePost : "/default/no-image.jpeg"}
         alt={post.ImagePost ? post.Title : "No image available"}
-        className="aspect-square rounded-lg object-fill"
+        className="aspect-square rounded-lg object-fill w-full h-auto"
       />
     );
   };
@@ -144,7 +144,7 @@ export default function Home() {
                               : "/default/no-image.jpeg"
                           }
                           alt={`${entrepreneur.givenName} ${entrepreneur.familyName}`}
-                          className="aspect-square rounded-lg object-fill"
+                          className="aspect-square rounded-lg object-fill w-full h-auto"
                         />
                         <div className="flex items-center justify-between">
                           <h3 className="text-lg font-medium">
