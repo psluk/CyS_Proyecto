@@ -425,7 +425,7 @@ export default function CreateEntrepreneurship() {
                     type="submit"
                     variant="gradient"
                   >
-                    Publicar emprendimiento
+                    Modificar emprendimiento
                   </Button>
                 </form>
               </Card>
