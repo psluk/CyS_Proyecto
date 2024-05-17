@@ -20,6 +20,7 @@ import { useSession } from "./context/SessionContext";
 import LoaderDialog from "./components/LoaderDialog";
 import VerifyEmail from "./components/VerifyEmail";
 import PostMap from "./pages/PostMap.jsx";
+import Reviews from "./pages/Reviews.jsx"
 
 export default function App() {
   const emprendeTecTheme = {};
@@ -43,6 +44,7 @@ export default function App() {
         <Route path="/emprendimientos/mapa" element={<PostMap />} />
         <Route path="/emprendimientos/:id" element={<PostDetails />} />
         <Route path="/emprendimientos/modificar/:id" element={<ModifyEntrepreneurship />} />
+        <Route path="/calificaciones/:id" element={<Reviews />} />
       </Routes>
       <ToastContainer
         position="bottom-left"

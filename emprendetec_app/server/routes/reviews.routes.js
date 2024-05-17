@@ -40,6 +40,33 @@ router.post(
   }
 );
 
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  const user = await currentUser(req);
+
+  try {
+    const result = await runStoredProcedure("EmprendeTEC_SP_GetPostReviews", {
+      IN_postId: id,
+      IN_currentEmail: user?.email,
+    });
+
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No hay calificaciones registradas para este emprendimiento." });
+    }
+
+    res.json({ reviews: result });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        message:
+          "Ocurrió un error al obtener la calificación del emprendimiento.",
+      });
+  }
+});
+
 router.get("/emprendimiento/:id", async (req, res) => {
   const { id } = req.params;
   const user = await currentUser(req);

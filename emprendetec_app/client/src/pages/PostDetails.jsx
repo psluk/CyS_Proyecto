@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import UseAxios from "../config/customAxios.js";
 import { useParams } from "react-router-dom";
-import { Rating } from "@material-tailwind/react";
+import { Rating, Input, Button, Textarea } from "@material-tailwind/react";
 import ImageGallery from "react-image-gallery";
 import { Link } from "react-router-dom";
 import { useSession } from "../context/SessionContext";
@@ -26,6 +26,8 @@ export default function PostDetails() {
   const params = useParams();
   const markerRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [compReview, setCompReview] = useState(false);
+  const [review, setReview] = useState('');
 
   useEffect(() => {
     fetchPost();
@@ -70,7 +72,7 @@ export default function PostDetails() {
           email: getUserEmail(),
           postId: params.id,
           score: newScore,
-          comment: "",
+          comment: review,
         })
         .then(() => {
           toast.success("Calificación agregada correctamente.");
@@ -91,6 +93,8 @@ export default function PostDetails() {
           toast.error(error?.response?.data?.message ?? defaultError);
         })
         .finally(() => setIsSubmitting(false));
+      
+      setCompReview(true);
     }
   };
 
@@ -154,6 +158,22 @@ export default function PostDetails() {
       return <img className="mb-2 rounded-2xl" src="/default/no-image.jpeg" />;
   };
 
+  const showComponentReview = () => {
+    if (compReview)
+      return (
+        <div className="md:w-2/3 lg:w-1/2">
+          <Textarea
+            name="textarea"
+            label="Opiniones"
+            onChange={(e) => setReview(e.target.value)}>
+          </Textarea>
+          <div className="flex justify-end">
+            <Button className="mt-2" onClick={() => handleSetScore(score)}>Enviar</Button>
+          </div>
+        </div>
+      )
+  };
+
   return (
     <>
       <Helmet>
@@ -161,14 +181,16 @@ export default function PostDetails() {
         <link rel="canonical" href="/emprendimientos/:id" />
       </Helmet>
       <main className="w-full max-w-7xl space-y-16 px-10">
-        <div className="flex w-full flex-col-reverse items-start justify-start bg-white md:flex-row">
+        <div className="flex w-full flex-col items-start justify-start bg-white md:flex-row">
           <div>{getImages()}</div>
           <div className="mb-5 w-full md:ml-16">
             <h1 className="text-3xl font-bold">{post && post.Title}</h1>
             <Link to={urlNavigate()}>
               <h2 className="mb-8 text-gray-600">{post?.FullName}</h2>
             </Link>
-            <div className="flex flex-row gap-2">
+            <div>
+            <p className="mb-8">{post && post.DescriptionPost}</p>
+            <div className="flex flex-row gap-2 mb-2">
               <span>
                 <FontAwesomeIcon
                   icon={faStar}
@@ -190,8 +212,15 @@ export default function PostDetails() {
                   />
                 </>
               )}
+              {post?.UserID === getUserID() && !loading && (
+                <>
+                  <Link to={`/calificaciones/${params.id}`}><Button>Ver Calificaciones y Opiniones</Button></Link>
+                </>
+              )}
             </div>
-            <p className="mt-8">{post && post.DescriptionPost}</p>
+            {showComponentReview()}
+            </div>
+            
             {post &&
               post.locationX !== null &&
               post.locationY !== null &&
