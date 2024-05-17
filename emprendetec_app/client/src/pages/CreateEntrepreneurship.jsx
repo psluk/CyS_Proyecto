@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import UseAxios from "../config/customAxios.js";
 import {
@@ -32,6 +33,7 @@ import { analytics } from "../config/firebase-config.js";
 import { logEvent } from "firebase/analytics";
 export default function CreateEntrepreneurship() {
   const axios = UseAxios();
+  const navigate = useNavigate();
   const { getUserEmail } = useSession();
   const [formData, setFormData] = useState({
     name: "",
@@ -140,6 +142,7 @@ export default function CreateEntrepreneurship() {
                 : formData.location,
             });
           }
+          navigate(-1);
         })
         .catch((error) => {
           toast.error(error?.response?.data?.message ?? defaultError);

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import UseAxios from "../config/customAxios.js";
 import {
@@ -34,8 +34,10 @@ import DraggableMarker from "../components/DraggableMarker.jsx";
 import CustomMapMarker from "../components/CustomMapMarker.js";
 import { analytics } from "../config/firebase-config.js";
 import { logEvent } from "firebase/analytics";
+
 export default function CreateEntrepreneurship() {
   const axios = UseAxios();
+  const navigate = useNavigate();
   const { getUserEmail, loading } = useSession();
 
   const [formData, setFormData] = useState({
@@ -190,7 +192,7 @@ export default function CreateEntrepreneurship() {
       const areImagesModified = !arraysEqual(selectedFiles, images);
       if (!areImagesModified) {
         toast.info("No se han realizado cambios en las imágenes.");
-        uploadedImageUrls = selectedFiles;
+        uploadedImageUrls = selectedFiles.map((file) => file.original);
       } else {
         try {
           for (const imageUrl of images) {
@@ -205,7 +207,6 @@ export default function CreateEntrepreneurship() {
       }
 
       formData.images = uploadedImageUrls;
-
       setLoading(false);
 
       axios
@@ -222,6 +223,7 @@ export default function CreateEntrepreneurship() {
                 : formData.location,
             });
           }
+          navigate(-1);
         })
         .catch((error) => {
           toast.error(error?.response?.data?.message ?? defaultError);

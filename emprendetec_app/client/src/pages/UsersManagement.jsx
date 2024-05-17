@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import UseAxios from "../config/customAxios.js";
-import { Avatar } from "@material-tailwind/react";
-import { Button } from "@material-tailwind/react";
-import { Checkbox } from "@material-tailwind/react";
+import { Avatar, Button, Checkbox } from "@material-tailwind/react";
 
 export default function UsersManagement() {
   const axios = UseAxios();
@@ -79,28 +77,28 @@ export default function UsersManagement() {
         <title>Administración usuarios | EmprendeTEC</title>
         <link rel="canonical" href="/administrar/usuario" />
       </Helmet>
-      <main className="w-full max-w-7xl space-y-16 overflow-auto px-10">
-        <h1 className="text-center font-sans text-2xl font-bold text-teal-900 sm:text-3xl lg:text-5xl">
+      <main className="w-full max-w-7xl space-y-16 overflow-auto px-4 sm:px-6 lg:px-10">
+        <h1 className="text-center font-sans text-xl sm:text-2xl lg:text-3xl xl:text-5xl font-bold text-teal-900">
           Administración de usuarios
         </h1>
         {loading ? (
           <div>Cargando...</div>
         ) : userDetailsList.length > 0 ? (
-          <div className=" py-4">
-            <div className="grid auto-rows-max grid-cols-7 items-center justify-items-center ">
-              <div className="col-span-1">Checkbox</div>
+          <div className="py-4">
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 auto-rows-max items-center justify-items-center">
+              <div className="hidden sm:block col-span-1 ">Checkbox</div>
               <div className="col-span-1">Avatar</div>
-              <div className="col-span-2">
+              <div className="col-span-1 lg:col-span-2 xl:col-span-2">
                 <button onClick={() => handleSort("FullName")}>
                   Nombre Completo
                 </button>
               </div>
-              <div className="col-span-1">
+              <div className="hidden lg:block col-span-1">
                 <button onClick={() => handleSort("RegistrationDate")}>
                   Fecha de Registro
                 </button>
               </div>
-              <div className="col-span-1">
+              <div className="hidden xl:block col-span-1">
                 <button onClick={() => handleSort("Score")}>Puntuación</button>
               </div>
               <Button
@@ -118,28 +116,28 @@ export default function UsersManagement() {
               {sortedUserDetailsList.map((user, index) => (
                 <div
                   key={index}
-                  className="grid auto-rows-max grid-cols-7 items-center justify-items-center py-4"
+                  className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 auto-rows-max items-center justify-items-center py-4"
                 >
                   <Checkbox
                     checked={selectedUsers.includes(user.Email)}
                     onChange={() => handleUserSelect(user.Email)}
                     id="ripple-on"
                     ripple={true}
-                    className="col-span-1"
+                    className="order-last md:order-first col-span-1"
                   />
                   <Avatar
                     src="https://docs.material-tailwind.com/img/face-2.jpg"
                     alt="avatar"
                     className="col-span-1"
                   />
-                  <div className="col-span-2">{user.FullName}</div>
-                  <div className="col-span-1">
+                  <div className="col-span-1 lg:col-span-2 xl:col-span-2">{user.FullName}</div>
+                  <div className="hidden lg:block col-span-1">
                     {new Date(user.RegistrationDate).toLocaleDateString()}
                   </div>
-                  <div className="col-span-1">{user.Email}</div>
+                  <div className="hidden xl:block col-span-1">{user.Email}</div>
                   <Button
                     color="red"
-                    className="col-span-1"
+                    className="hidden sm:block col-span-1"
                     onClick={() => {
                       handleDeleteUser([user.Email]);
                     }}
