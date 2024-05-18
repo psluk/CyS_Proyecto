@@ -63,7 +63,7 @@ BEGIN
              ORDER BY m.timestamp
              FOR JSON PATH) AS 'chat.messages'
         FROM Chats c
-        WHERE EXISTS (SELECT 1 FROM ChatUsers WHERE chatId = c.chatId AND userId = @userId)  -- Asumiendo @userId es proporcionado
+        WHERE EXISTS (SELECT 1 FROM ChatUsers WHERE chatId = c.chatId AND userId = @userId)
         FOR JSON PATH
     ),
     '[]'
