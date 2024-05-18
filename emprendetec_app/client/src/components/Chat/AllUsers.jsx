@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-
-import { createChatRoom } from "../../services/ChatService";
 import Contact from "./Contact";
 
 function classNames(...classes) {

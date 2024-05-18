@@ -7,7 +7,9 @@ export default function Contact({ chatRoom, currentUser }) {
   const [contact, setContact] = useState();
 
   useEffect(() => {
-    const contact = chatRoom.chat.users[1];
+    const contact = chatRoom.chat.users.find(
+      (member) => member.user.userId !== currentUser.customClaims.userId
+    )
 
     const fetchData = async () => {
       // Asegúrate de que `contact` y `contact.user.userId` están definidos antes de hacer la llamada

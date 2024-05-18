@@ -39,32 +39,42 @@ export default function ChatRoom({
     });
   }, [messages]);
 
-  // useEffect(() => {
-  //   socket.current?.on("getMessage", (data) => {
-  //     setIncomingMessage({
-  //       senderId: data.senderId,
-  //       message: data.message,
-  //     });
-  //   });
-  // }, [socket]);
+  useEffect(() => {
+    socket.current?.on("getMessage", async (data) => {
+      const res = await getMessagesOfChatRoom(currentChat.chat.id);
+      setMessages(res.data);
+    });
+  }, [socket]);
 
   useEffect(() => {
     incomingMessage && setMessages((prev) => [...prev, incomingMessage]);
   }, [incomingMessage]);
 
   const handleFormSubmit = async (message) => {
+
+    const senderId = currentUser.customClaims.userId;
+    const receiverId = currentChat.chat.users.find(
+      (user) => user.user.userId !== senderId,
+    ).user.userId;
+
     if (currentChat.chat.id !== -1) {
       const res = await sendMessage(
         message,
-        currentUser.customClaims.userId,
+        senderId,
         currentChat.chat.id,
       );
 
       setMessages([...messages, res.data[0]]);
+
+      socket.current?.emit("sendMessage", {
+        senderId: senderId,
+        receiverId: receiverId,
+        message: message,
+      });
     } else {
       const res = await createChatRoom(
         currentUser.customClaims.userId,
-        currentChat.chat.users[1].user.userId,
+        receiverId,
         message,
       );
 

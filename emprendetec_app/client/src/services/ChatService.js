@@ -1,16 +1,27 @@
 import axios from "axios";
-// import { io } from "socket.io-client";
-
+import { io } from "socket.io-client";
 const baseURL = "/api";
 
-// export const initiateSocketConnection = async () => {
 
-//   const socket = io("http://localhost:3001", {
 
-//   });
+export const initiateSocketConnection = async (token) => {
 
-//   return socket;
-// };
+  let url = "http://localhost:1234";
+  if (
+    process.env.NODE_ENV !== "development" &&
+    window.location.hostname !== "localhost"
+  ) {
+    url = "https://emprendetec.azurewebsites.net";
+  }
+
+  const socket = io(url, {
+    auth: {
+      token,
+    },
+  });
+
+  return socket;
+};
 
 export const getUser = async (userId) => {
   try {

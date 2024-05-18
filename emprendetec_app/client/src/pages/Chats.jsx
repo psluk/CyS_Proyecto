@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
-import { getChatRooms } from "../services/ChatService";
+import {
+  getChatRooms,
+  initiateSocketConnection,
+} from "../services/ChatService";
 
 import { useSession } from "../context/SessionContext";
 import { useParams } from "react-router-dom";
@@ -19,18 +22,20 @@ export default function ChatLayout() {
 
   const socket = useRef();
 
-  const { user, getUserEmail } = useSession();
+  const { user, getUserEmail, token } = useSession();
   const email = getUserEmail();
   const { id } = useParams();
-  // useEffect(() => {
-  //   const getSocket = async () => {
-  //     const res = await initiateSocketConnection();
-  //     socket.current = res;
-  //     socket.current.emit("addUser", currentUser.uid);
-  //   };
 
-  //   getSocket();
-  // }, [currentUser.uid]);
+  useEffect(() => {
+    const getSocket = async () => {
+      console.log("Getting socket");
+      const res = await initiateSocketConnection(token);
+      socket.current = res;
+      socket.current.emit("addUser", user.customClaims.userId);
+    };
+
+    if (user) getSocket();
+  }, [user]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,15 +45,20 @@ export default function ChatLayout() {
         setChatRooms(results);
 
         // Agrega usuarios para búsqueda u otras funciones
-        const usersToAdd = results.map((result) => result.chat.users[1]);
+        const usersToAdd = results.map((result) => {
+          return result.chat.users.find(
+            (member) => member.user.userId !== user.customClaims.userId,
+          );
+        
+        });
+
         setUsers(usersToAdd);
-        console.log(results);
 
         // Si hay un ID de sala especificado en la URL, trata de encontrar esa sala
         if (id) {
           const chat = results.find(
             (room) =>
-              room.chat.users[1] &&
+              room.chat.users[0].user.userId === parseInt(id) ||
               room.chat.users[1].user.userId === parseInt(id),
           );
           if (chat) {
