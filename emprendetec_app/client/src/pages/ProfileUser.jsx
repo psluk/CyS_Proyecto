@@ -4,12 +4,14 @@ import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Button, Spinner } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom";
 
 export default function Perfil() {
   const [postsList, setPostsList] = useState([]);
   const [user, setUser] = useState(null);
   const [userImage, setUserImage] = useState("/default/perfil.png");
   const params = useParams();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -56,6 +58,10 @@ export default function Perfil() {
       );
     else
       return <img className="mb-2 rounded-2xl" src="/default/no-image.jpeg" />;
+  };
+
+  const handleContactClick = () => {
+    navigate(`/chat/${params.id}`);
   };
 
   return (
@@ -116,7 +122,7 @@ export default function Perfil() {
               </div>
             </div>
             <div className="w-1/2 space-y-2 text-right">
-              <Button disabled color="green">
+              <Button onClick={handleContactClick} color="green">
                 Contactar
               </Button>
             </div>
