@@ -183,7 +183,7 @@ router.put("/editar-perfil", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     // Ejecutar el procedimiento almacenado para obtener los detalles de todos los usuarios
-    const result = await runStoredProcedure("GetUserDetails");
+    const result = await runStoredProcedure("EmprendeTEC_SP_GetUserDetails");
 
     // Verificar si se encontraron datos de usuario
     if (result.length === 0) {

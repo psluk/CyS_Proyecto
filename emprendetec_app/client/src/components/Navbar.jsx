@@ -33,6 +33,11 @@ export default function Navbar() {
       userTypes: ["Administrator", "Professor", "Student"],
     },
     {
+      label: "Chats",
+      path: "/chat",
+      userTypes: ["Administrator", "Professor", "Student"],
+    },
+    {
       component: (
         <Button variant="gradient" color="blue">
           Iniciar sesión
@@ -60,7 +65,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 flex h-20 w-full justify-center bg-gray-100 px-10 py-4 md:py-3 z-[1001]">
+    <nav className="fixed top-0 z-[1001] flex h-20 w-full justify-center bg-gray-100 px-10 py-4 md:py-3">
       <div className="flex w-full max-w-7xl flex-row items-center justify-between">
         <Link
           to="/"
@@ -73,9 +78,9 @@ export default function Navbar() {
           <span className="max-xs:hidden">EmprendeTEC</span>
         </Link>
         <div
-          className={`max-lg:absolute ${isMenuOpen ? "max-lg:left-0" : "max-lg:left-full"} transition-[left] max-lg:top-20 max-lg:w-screen max-lg:bg-gray-200/80 max-lg:py-5 max-lg:backdrop-blur-md duration-500 max-h-[calc(100dv-5rem)] max-lg:overflow-y-auto max-lg:shadow-lg max-lg:rounded-lg`}
+          className={`max-lg:absolute ${isMenuOpen ? "max-lg:left-0" : "max-lg:left-full"} max-h-[calc(100dv-5rem)] transition-[left] duration-500 max-lg:top-20 max-lg:w-screen max-lg:overflow-y-auto max-lg:rounded-lg max-lg:bg-gray-200/80 max-lg:py-5 max-lg:shadow-lg max-lg:backdrop-blur-md`}
         >
-          <ul className="flex flew-row max-lg:flex-col items-center gap-7">
+          <ul className="flew-row flex items-center gap-7 max-lg:flex-col">
             {navigationLinks
               .filter(
                 (link) =>
@@ -85,11 +90,16 @@ export default function Navbar() {
               )
               .map((link, index) => {
                 return (
-                  <li key={index} className="max-lg:flex max-lg:w-full items-center max-lg:px-10">
+                  <li
+                    key={index}
+                    className="items-center max-lg:flex max-lg:w-full max-lg:px-10"
+                  >
                     <Link
                       to={link.path}
-                      className={`${link.path === currentPath ? "font-semibold text-gray-900" : "font-medium text-gray-700 hover:text-gray-900"} transition grow text-center`}
-                      onClick={() => {setIsMenuOpen(false)}}
+                      className={`${link.path === currentPath ? "font-semibold text-gray-900" : "font-medium text-gray-700 hover:text-gray-900"} grow text-center transition`}
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                      }}
                     >
                       {link.component || link.label}
                     </Link>

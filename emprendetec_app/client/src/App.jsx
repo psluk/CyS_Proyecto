@@ -21,6 +21,7 @@ import LoaderDialog from "./components/LoaderDialog";
 import VerifyEmail from "./components/VerifyEmail";
 import PostMap from "./pages/PostMap.jsx";
 import Reviews from "./pages/Reviews.jsx"
+import ChatLayout from "./pages/Chats.jsx";
 
 export default function App() {
   const emprendeTecTheme = {};
@@ -45,6 +46,7 @@ export default function App() {
         <Route path="/emprendimientos/:id" element={<PostDetails />} />
         <Route path="/emprendimientos/modificar/:id" element={<ModifyEntrepreneurship />} />
         <Route path="/calificaciones/:id" element={<Reviews />} />
+        <Route path="/chat/:id?" element={<ChatLayout />} />
       </Routes>
       <ToastContainer
         position="bottom-left"
