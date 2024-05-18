@@ -61,9 +61,17 @@ BEGIN
              INNER JOIN Users u ON m.fromUserId = u.userId
              WHERE m.chatId = c.chatId
              ORDER BY m.timestamp
-             FOR JSON PATH) AS 'chat.messages'
+             FOR JSON PATH) AS 'chat.messages',
+            MAX(m.timestamp) AS 'lastMessageTimestamp'
         FROM Chats c
-        WHERE EXISTS (SELECT 1 FROM ChatUsers WHERE chatId = c.chatId AND userId = @userId)
+        LEFT JOIN Messages m ON m.chatId = c.chatId
+        WHERE EXISTS (
+            SELECT 1
+            FROM ChatUsers
+            WHERE chatId = c.chatId AND userId = @userId
+        )
+        GROUP BY c.chatId
+        ORDER BY 'lastMessageTimestamp' DESC
         FOR JSON PATH
     ),
     '[]'

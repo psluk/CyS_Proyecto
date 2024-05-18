@@ -11,7 +11,8 @@ CREATE OR ALTER PROCEDURE [dbo].[EmprendeTEC_SP_CreateChat]
 
 AS
 BEGIN
-    SET NOCOUNT ON;         -- Do not return metadata
+    SET NOCOUNT ON;
+    -- Do not return metadata
 
     -- ERROR HANDLING
     DECLARE @ErrorNumber INT, @ErrorSeverity INT, @ErrorState INT, @Message VARCHAR(200);
@@ -26,32 +27,33 @@ BEGIN
         IF NOT EXISTS
         (
             SELECT 1
-            FROM [dbo].[Users]
-            WHERE   [userId] = @IN_SenderId
+    FROM [dbo].[Users]
+    WHERE   [userId] = @IN_SenderId
         )
         BEGIN
-            RAISERROR('El usuario remitente no existe.', 16, 1);
-        END;
+        RAISERROR('El usuario remitente no existe.', 16, 1);
+    END;
 
         IF NOT EXISTS
         (
             SELECT 1
-            FROM [dbo].[Users]
-            WHERE   [userId] = @IN_ReceiverId
+    FROM [dbo].[Users]
+    WHERE   [userId] = @IN_ReceiverId
         )
         BEGIN
-            RAISERROR('El usuario destinatario no existe.', 16, 1);
-        END;
+        RAISERROR('El usuario destinatario no existe.', 16, 1);
+    END;
 
         -- START TRANSACTION
         IF @@TRANCOUNT = 0
         BEGIN
-            SET @transactionStarted = 1;
-            BEGIN TRANSACTION;
-        END;
+        SET @transactionStarted = 1;
+        BEGIN TRANSACTION;
+    END;
 
         -- Insert the chat into the 'chats' table
-        INSERT INTO Chats DEFAULT VALUES;
+        INSERT INTO Chats
+    DEFAULT VALUES;
 
         SELECT @chatId = SCOPE_IDENTITY();
 
@@ -59,10 +61,10 @@ BEGIN
 
         INSERT INTO [dbo].[ChatUsers]
         (
-            [chatId],
-            [userId]
+        [chatId],
+        [userId]
         )
-        VALUES
+    VALUES
         (
             @chatId,
             @IN_SenderId
@@ -70,10 +72,10 @@ BEGIN
 
         INSERT INTO [dbo].[ChatUsers]
         (
-            [chatId],
-            [userId]
+        [chatId],
+        [userId]
         )
-        VALUES
+    VALUES
         (
             @chatId,
             @IN_ReceiverId
@@ -82,12 +84,12 @@ BEGIN
         -- Insert the message into the 'messages' table
         INSERT INTO [dbo].[Messages]
         (
-            [chatId],
-            [fromUserId],
-            [messageBody],
-            [timestamp]
+        [chatId],
+        [fromUserId],
+        [messageBody],
+        [timestamp]
         )
-        VALUES
+    VALUES
         (
             @chatId,
             @IN_SenderId,
@@ -95,11 +97,53 @@ BEGIN
             GETUTCDATE()
         );
 
+        SELECT COALESCE(
+    (
+        SELECT
+            c.chatId AS 'chat.id',
+            (SELECT
+                u.userId AS 'user.userId',
+                u.givenName AS 'user.givenName',
+                u.familyName AS 'user.familyName',
+                u.email AS 'user.email',
+                u.profilePictureUrl AS 'user.profilePictureUrl'
+             FROM ChatUsers cu
+             INNER JOIN Users u ON cu.userId = u.userId
+             WHERE cu.chatId = c.chatId
+             FOR JSON PATH) AS 'chat.users',
+            (SELECT
+                m.messageId AS 'message.messageId',
+                m.messageBody AS 'message.messageBody',
+                m.timestamp AS 'message.timestamp',
+                m.fromUserId AS 'message.senderId',
+                u.givenName AS 'message.senderGivenName',
+                u.familyName AS 'message.senderFamilyName',
+                u.email AS 'message.senderEmail'
+             FROM Messages m
+             INNER JOIN Users u ON m.fromUserId = u.userId
+             WHERE m.chatId = c.chatId
+             ORDER BY m.timestamp
+             FOR JSON PATH) AS 'chat.messages',
+            MAX(m.timestamp) AS 'lastMessageTimestamp'
+        FROM Chats c
+        LEFT JOIN Messages m ON m.chatId = c.chatId
+        WHERE EXISTS (
+            SELECT 1
+            FROM ChatUsers
+            WHERE chatId = c.chatId
+        ) AND c.chatId = @chatId
+        GROUP BY c.chatId
+        ORDER BY 'lastMessageTimestamp' DESC
+        FOR JSON PATH
+    ),
+    '[]'
+) AS 'results';
+
         -- COMMIT TRANSACTION
         IF @transactionStarted = 1
         BEGIN
-            COMMIT TRANSACTION;
-        END;
+        COMMIT TRANSACTION;
+    END;
 
     END TRY
     BEGIN CATCH
@@ -111,14 +155,15 @@ BEGIN
 
         IF @transactionStarted = 1
         BEGIN
-            ROLLBACK;
-        END;
+        ROLLBACK;
+    END;
 
         IF @ErrorNumber != 50000
         BEGIN
-            -- If it's not a custom error, log the error
-            INSERT INTO [dbo].[Errors]
-            VALUES (
+        -- If it's not a custom error, log the error
+        INSERT INTO [dbo].[Errors]
+        VALUES
+            (
                 SUSER_NAME(),
                 ERROR_NUMBER(),
                 ERROR_STATE(),
@@ -128,7 +173,7 @@ BEGIN
                 ERROR_MESSAGE(),
                 GETUTCDATE()
             );
-        END;
+    END;
 
         RAISERROR('%s - Error Number: %i', 
             @ErrorSeverity, @ErrorState, @Message, @ErrorNumber);
