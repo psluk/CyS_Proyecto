@@ -51,18 +51,13 @@ export default function ChatRoom({
   }, [incomingMessage]);
 
   const handleFormSubmit = async (message) => {
-
     const senderId = currentUser.customClaims.userId;
     const receiverId = currentChat.chat.users.find(
       (user) => user.user.userId !== senderId,
     ).user.userId;
 
     if (currentChat.chat.id !== -1) {
-      const res = await sendMessage(
-        message,
-        senderId,
-        currentChat.chat.id,
-      );
+      const res = await sendMessage(message, senderId, currentChat.chat.id);
 
       setMessages([...messages, res.data[0]]);
 
@@ -88,11 +83,11 @@ export default function ChatRoom({
   return (
     <div className="lg:col-span-2 lg:block">
       <div className="w-full">
-        <div className="border-b border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+        <div className="border-b border-gray-200 bg-white p-3 ">
           <Contact chatRoom={currentChat} currentUser={currentUser} />
         </div>
 
-        <div className="relative h-[30rem] w-full overflow-y-auto border-b border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
+        <div className="relative h-[30rem] w-full overflow-y-auto border-b border-gray-200 bg-white p-6 ">
           <ul className="space-y-2">
             {messages.map((message, index) => (
               <div key={index} ref={scrollRef}>

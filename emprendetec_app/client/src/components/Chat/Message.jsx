@@ -16,7 +16,7 @@ export default function Message({ message, self }) {
           <div
             className={classNames(
               self.customClaims.userId  !== message.userId
-                ? "border border-gray-200 bg-white text-gray-700 shadow-md dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400"
+                ? "border border-gray-200 bg-white text-gray-700 shadow-md "
                 : "bg-blue-600 text-white dark:bg-blue-500",
               "relative max-w-xl rounded-lg px-4 py-2 shadow",
             )}
