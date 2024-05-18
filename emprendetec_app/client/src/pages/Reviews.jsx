@@ -1,21 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect} from "react";
 import { Helmet } from "react-helmet-async";
 import UseAxios from "../config/customAxios.js";
 import { useParams } from "react-router-dom";
-import { Button, Avatar, Checkbox, Typography } from "@material-tailwind/react";
-import ImageGallery from "react-image-gallery";
-import { Link } from "react-router-dom";
-import { useSession } from "../context/SessionContext";
-import "react-image-gallery/styles/css/image-gallery.css";
-import { analytics } from "../config/firebase-config";
-import { logEvent } from "firebase/analytics";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import customMapMarker from "../components/CustomMapMarker.js";
-import "../styles/imageGallery.css";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { toast } from "react-toastify";
-import { defaultError } from "../utils/ErrorSettings.js";
+import { Typography } from "@material-tailwind/react";
 
 export default function Reviews() {
   const axios = UseAxios();
