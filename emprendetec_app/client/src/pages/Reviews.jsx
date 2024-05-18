@@ -1,8 +1,9 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import UseAxios from "../config/customAxios.js";
 import { useParams } from "react-router-dom";
 import { Typography } from "@material-tailwind/react";
+import "../styles/imageGallery.css";
 
 export default function Reviews() {
   const axios = UseAxios();
