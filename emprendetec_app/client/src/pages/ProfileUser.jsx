@@ -5,6 +5,9 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Button, Spinner } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
+import { useSession } from "../context/SessionContext.jsx";
 
 export default function Perfil() {
   const [postsList, setPostsList] = useState([]);
@@ -13,6 +16,7 @@ export default function Perfil() {
   const params = useParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const { getUserType } = useSession();
 
   useEffect(() => {
     fetchUser();
@@ -22,7 +26,7 @@ export default function Perfil() {
   const fetchPosts = async () => {
     try {
       const response = await axios.get(
-        `/api/emprendimientos/usuario/${params.id}`,
+        `/api/emprendimientos/usuario/${params.id}`
       );
       if (response.data && response.data.posts) {
         setPostsList(response.data.posts);
@@ -113,8 +117,8 @@ export default function Perfil() {
                     <span className="ms-1">
                       {user.Score
                         ? user.Score.toLocaleString(["es-CR", "es"], {
-                            maximumFractionDigits: 1,
-                          })
+                          maximumFractionDigits: 1
+                        })
                         : "Sin calificaciones"}
                     </span>
                   )}
@@ -148,7 +152,17 @@ export default function Perfil() {
                     <Link to={`/emprendimientos/${post.ID}`}>
                       {getImage(post)}
                       <div className="mt-2 items-center justify-between">
-                        <h3 className="text-lg font-medium">{post.Title}</h3>
+                        <span className="flex items-center justify-between">
+                          <h3 className="text-lg font-medium">{post.Title}</h3>
+                          {
+                            getUserType() === "Administrator" && <Link to={`/emprendimientos/modificar/${post.ID}`}>
+                              <FontAwesomeIcon
+                                icon={faPencil}
+                                className="h-4 w-4 text-blue-gray-800"
+                              />
+                            </Link>
+                          }
+                        </span>
                         <div className="flex items-center justify-between">
                           <h2 className="text-gray-600">{post.FullName}</h2>
                           <span className="flex items-center text-gray-500">
