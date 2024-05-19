@@ -3,17 +3,14 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { defaultError } from "../utils/ErrorSettings";
 import { Helmet } from "react-helmet-async";
-import { Button, Input, Spinner } from "@material-tailwind/react";
+import { Button, Spinner } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faNetworkWired,
   faSquarePollVertical,
-  faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
 export default function Home() {
-  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const searchParams = new URLSearchParams(window.location.search);
   const [postsList, setPostsList] = useState([]);
@@ -41,7 +38,7 @@ export default function Home() {
         setPostsList(topSixPosts);
         fetchUsers();
       })
-      .catch((error) => {
+      .catch(() => {
         toast.error(defaultError);
       })
       .finally(() => {
@@ -60,7 +57,7 @@ export default function Home() {
       <img
         src={post.ImagePost ? post.ImagePost : "/default/no-image.jpeg"}
         alt={post.ImagePost ? post.Title : "No image available"}
-        className="aspect-square h-auto w-full rounded-lg object-fill"
+        className="aspect-square h-auto w-full rounded-lg object-cover"
       />
     );
   };
