@@ -61,6 +61,9 @@ export default function CreateEntrepreneurship() {
   const [isSearchingPlace, setIsSearchingPlace] = useState(false);
   const mapPopupRef = useRef(null);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = useRef();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (!loading) {
@@ -72,8 +75,6 @@ export default function CreateEntrepreneurship() {
   const [activeImage, setActiveImage] = useState(
     <FontAwesomeIcon icon={faFile} beat size="2xl" />
   );
-  const [loading2, setLoading] = useState(false);
-  const fileInputRef = useRef();
 
   const fetchPost = async () => {
     try {
@@ -186,10 +187,10 @@ export default function CreateEntrepreneurship() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     var uploadedImageUrls = [];
-    setLoading(true);
+    setIsSubmitting(true);
     if (selectedFiles.length === 0) {
       toast.error("No se han seleccionado imágenes.");
-      setLoading(false);
+      setIsSubmitting(false);
     } else {
       const areImagesModified = !arraysEqual(selectedFiles, images);
       if (!areImagesModified) {
@@ -209,7 +210,7 @@ export default function CreateEntrepreneurship() {
       }
 
       formData.images = uploadedImageUrls;
-      setLoading(false);
+      setIsSubmitting(false);
 
       axios
         .put("/api/emprendimientos/modificar", formData)
@@ -234,6 +235,7 @@ export default function CreateEntrepreneurship() {
   };
 
   const handleDelete = () => {
+    setIsDeleting(true);
     axios.delete(`/api/emprendimientos/${params.id}`).then(() => {
       toast.success("¡Emprendimiento eliminado exitosamente!");
       if (analytics) {
@@ -247,6 +249,8 @@ export default function CreateEntrepreneurship() {
       navigate(-1);
     }).catch((error) => {
       toast.error(error?.response?.data?.message ?? defaultError);
+    }).finally(() => {
+      setIsDeleting(false);
     });
   };
 
@@ -309,7 +313,7 @@ export default function CreateEntrepreneurship() {
       <main className="w-full max-w-7xl space-y-12 px-6">
         <div className="flex w-full flex-col items-center justify-start bg-white p-2 md:p-4 lg:p-6">
           <div>
-            {loading2 && (
+            {isSubmitting && (
               <div
                 className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center bg-black bg-opacity-50">
                 <Spinner color="blue" />
@@ -582,6 +586,7 @@ export default function CreateEntrepreneurship() {
               className="w-1/2 justify-center"
               onClick={handleDelete}
               variant="gradient"
+              loading={isDeleting}
             >
               Eliminar
             </Button>
