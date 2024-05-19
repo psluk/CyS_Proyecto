@@ -10,10 +10,11 @@ import {
   faSquarePollVertical
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import { useSession } from "../context/SessionContext.jsx";
 
 export default function Home() {
+  const { loading: isSessionLoading } = useSession();
   const [loading, setLoading] = useState(false);
-  const searchParams = new URLSearchParams(window.location.search);
   const [postsList, setPostsList] = useState([]);
   const [entrepreneursList, setEntrepreneursList] = useState([]);
   const [isSurveyMessageVisible, setIsSurveyMessageVisible] = useState(true);
@@ -54,15 +55,27 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (searchParams.has("showEmailVerificationSuccess")) {
-      toast.success("Correo electrónico verificado correctamente.");
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
     // Saves the form message status in local storage
     localStorage.setItem("isSurveyMessageClosed", (!isSurveyMessageVisible).toString());
   }, [isSurveyMessageVisible]);
+
+  useEffect(() => {
+    if (isSessionLoading) {
+      // Wait for the session to load
+      return;
+    }
+
+    // Checks if the URL has the query parameter to show the email verification success message
+    const url = new URL(window.location);
+    const searchParams = new URLSearchParams(window.location.search);
+
+    if (searchParams.has("showEmailVerificationSuccess")) {
+      toast.success("Correo electrónico verificado correctamente.");
+    }
+
+    url.searchParams.delete('showEmailVerificationSuccess');
+    history.replaceState({}, '', url);
+  }, [isSessionLoading]);
 
   const getImagePost = (post) => {
     return (

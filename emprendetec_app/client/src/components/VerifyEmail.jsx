@@ -24,7 +24,10 @@ export function ConfirmEmailVerification({ oobCode, open, handler }) {
     const auth = getAuth();
     applyActionCode(auth, oobCode)
       .then(() => {
-        window.location.href = "/?showEmailVerificationSuccess"; // Refresh the page
+        // Refresh token to update user claims
+        auth.currentUser.getIdToken(true).then(() => {
+          window.location.href = "/?showEmailVerificationSuccess"; // Refresh the page
+        });
       })
       .catch(() => {
         toast.error("No se pudo verificar el correo electrónico. Verificá el enlace o solicitá uno nuevo.");
@@ -40,8 +43,8 @@ export function ConfirmEmailVerification({ oobCode, open, handler }) {
     <Dialog open={open} handler={handler}>
       <DialogHeader>Verificación de correo electrónico</DialogHeader>
       <DialogBody>
-        Estás a punto de verificar el correo electrónico "
-        <strong>{getUserEmail()}</strong>".
+        Estás a punto de verificar el correo electrónico &quot;
+        <strong>{getUserEmail()}</strong>&quot;.
         <br />
         ¿Continuar?
       </DialogBody>
