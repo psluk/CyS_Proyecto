@@ -6,7 +6,8 @@ import { Helmet } from "react-helmet-async";
 import { Button, Spinner } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faSquarePollVertical,
+  faCircleXmark,
+  faSquarePollVertical
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
@@ -15,6 +16,7 @@ export default function Home() {
   const searchParams = new URLSearchParams(window.location.search);
   const [postsList, setPostsList] = useState([]);
   const [entrepreneursList, setEntrepreneursList] = useState([]);
+  const [isSurveyMessageVisible, setIsSurveyMessageVisible] = useState(true);
 
   const fetchUsers = async () => {
     try {
@@ -29,6 +31,11 @@ export default function Home() {
 
   useEffect(() => {
     setLoading(true); // Inicia el spinner al comenzar la carga
+
+    // Gets the local storage data to check if the user has closed the form message
+    const isFormMessageClosed = localStorage.getItem("isFormMessageClosed");
+    setIsSurveyMessageVisible(!isFormMessageClosed);
+
     axios
       .get("/api/emprendimientos")
       .then((response) => {
@@ -52,6 +59,11 @@ export default function Home() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    // Saves the form message status in local storage
+    localStorage.setItem("isSurveyMessageClosed", (!isSurveyMessageVisible).toString());
+  }, [isSurveyMessageVisible]);
+
   const getImagePost = (post) => {
     return (
       <img
@@ -69,28 +81,35 @@ export default function Home() {
         <link rel="canonical" href="/" />
       </Helmet>
       <main className="relative w-full max-w-7xl space-y-10 px-10">
-        <div className="flex w-full flex-row items-center gap-3 rounded-xl bg-gray-200 p-5 text-lg shadow-lg md:text-xl">
-          <FontAwesomeIcon
-            icon={faSquarePollVertical}
-            className="size-16 text-teal-500 drop-shadow-md"
-          />
-          <p className="text-red-800">
-            ¿Sos un emprendedor? Llená nuestra encuesta y ayudanos a mejorar:{" "}
-            <Link
-              to="https://forms.gle/EDSANh3JFMzartuD9"
-              target="_blank"
-              referrerPolicy="no-referrer"
-              className="mx-auto mt-2 flex justify-center md:mt-0 md:inline"
-            >
-              <Button
-                className="mx-auto animate-pulse md:me-0 md:ms-2"
-                color="teal"
+        {
+          isSurveyMessageVisible && <div
+            className="flex w-full flex-row items-center gap-3 rounded-xl bg-gray-200 p-5 text-lg shadow-lg md:text-xl relative">
+            <FontAwesomeIcon
+              icon={faSquarePollVertical}
+              className="size-16 text-teal-500 drop-shadow-md"
+            />
+            <p className="text-red-800">
+              ¿Sos un emprendedor? Llená nuestra encuesta y ayudanos a mejorar:{" "}
+              <Link
+                to="https://forms.gle/EDSANh3JFMzartuD9"
+                target="_blank"
+                referrerPolicy="no-referrer"
+                className="mx-auto mt-2 flex justify-center md:mt-0 md:inline"
               >
-                Ver encuesta
-              </Button>
-            </Link>
-          </p>
-        </div>
+                <Button
+                  className="mx-auto animate-pulse md:me-0 md:ms-2"
+                  color="teal"
+                >
+                  Ver encuesta
+                </Button>
+              </Link>
+            </p>
+            <FontAwesomeIcon icon={faCircleXmark}
+                             className="size-8 text-teal-500 hover:text-teal-300 transition-colors absolute top-0 right-0 translate-x-1/4 -translate-y-1/4 cursor-pointer"
+                             onClick={() => setIsSurveyMessageVisible(false)}
+                             title="Ocultar mensaje" />
+          </div>
+        }
         {loading ? (
           <div className="h-full w-full ">
             <Spinner className="mx-auto h-12 w-12" color={"teal"} />
@@ -98,8 +117,16 @@ export default function Home() {
         ) : (
           <div className="space-y-10">
             {postsList.length > 0 && (
-              <div className="space-y-6">
-                <h1 className="text-center font-sans text-xl font-bold text-teal-900 sm:text-2xl md:text-start lg:text-3xl">
+              <div className="space-y-6 relative">
+                {
+                  !isSurveyMessageVisible &&
+                  <FontAwesomeIcon icon={faSquarePollVertical}
+                                   className="size-16 text-teal-500 hover:text-teal-300 transition-colors drop-shadow-md absolute top-0 right-0 translate-x-1/4 -translate-y-1/4 cursor-pointer"
+                                   onClick={() => setIsSurveyMessageVisible(true)}
+                                   title="Ver mensaje sobre encuesta" />
+                }
+                <h1
+                  className="text-center font-sans text-xl font-bold text-teal-900 sm:text-2xl md:text-start lg:text-3xl">
                   Emprendimientos más destacados
                 </h1>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -139,7 +166,8 @@ export default function Home() {
             )}
             {entrepreneursList.length > 0 && (
               <div className="space-y-6">
-                <h1 className="text-center font-sans text-xl font-bold text-teal-900 sm:text-2xl md:text-start lg:text-3xl">
+                <h1
+                  className="text-center font-sans text-xl font-bold text-teal-900 sm:text-2xl md:text-start lg:text-3xl">
                   Emprendedores más destacados
                 </h1>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
