@@ -134,7 +134,7 @@ export default function Home() {
                 {
                   !isSurveyMessageVisible &&
                   <FontAwesomeIcon icon={faSquarePollVertical}
-                                   className="size-16 text-teal-500 hover:text-teal-300 transition-colors drop-shadow-md absolute top-0 right-0 translate-x-1/4 -translate-y-1/4 cursor-pointer"
+                                   className="size-10 md:size-12 lg:size-14 xl:size-16 text-teal-500 hover:text-teal-300 transition-colors drop-shadow-md absolute top-0 right-0 translate-x-1/4 -translate-y-1/4 cursor-pointer"
                                    onClick={() => setIsSurveyMessageVisible(true)}
                                    title="Ver mensaje sobre encuesta" />
                 }
