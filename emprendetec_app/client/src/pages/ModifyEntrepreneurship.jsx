@@ -87,12 +87,33 @@ export default function CreateEntrepreneurship() {
         response.data.post &&
         response.data.post.length > 0
       ) {
-        setPost(response.data.post[0]);
+        const fetchedPost = response.data.post[0];
+        const locationString = fetchedPost.location;
+        setPost(fetchedPost);
+
+        // Find the building number
+        const buildingNumber_regex = /^([A-Z]\d+) - /;
+
+        // Match the building number
+        const match = buildingNumber_regex.exec(locationString);
+
+        setFormData({
+          projectID: fetchedPost.ID,
+          name: fetchedPost.Title,
+          description: fetchedPost.DescriptionPost,
+          userEmail: fetchedPost.UserEmail,
+          location: match ? locationString.replace(match[0], '') : locationString,
+          latitude: fetchedPost.locationY,
+          longitude: fetchedPost.locationX,
+          building_number: match ? match[1] : "",
+        });
+        setInPerson(fetchedPost.location !== "" && fetchedPost.locationX !== 0 && fetchedPost.locationY !== 0);
       }
     } catch (error) {
       console.error("Error al obtener el emprendimiento:", error);
     }
   };
+
   const fetchImages = async () => {
     try {
       const response = await axios.get(
@@ -399,12 +420,13 @@ export default function CreateEntrepreneurship() {
                       required={true}
                       value={formData.description}
                       onChange={handleInputChange}
+                      placeholder={post.DescriptionPost}
                       label="Descripción del emprendimiento"
                     />
                     <Switch
                       label="Presencial"
                       onChange={(e) => setInPerson(e.target.checked)}
-                      value={inPerson}
+                      checked={inPerson}
                       color="teal"
                     />
                     {inPerson && (
@@ -433,7 +455,7 @@ export default function CreateEntrepreneurship() {
                                 handlePlaceSearch(e);
                               }
                             }}
-                            placeholder="Nombre o número de edificio"
+                            placeholder={post.location || "Nombre o número de edificio"}
                           />
                           <IconButton
                             variant="text"
