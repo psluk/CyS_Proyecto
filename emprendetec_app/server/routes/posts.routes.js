@@ -1,7 +1,8 @@
 import express from "express";
+
 const router = express.Router();
 import { runStoredProcedure } from "../config/database/database-provider.js";
-import { checkPermissions } from "../sessions/session-provider.js";
+import { checkPermissions, currentUser } from "../sessions/session-provider.js";
 
 router.get("/", async (req, res) => {
   try {
@@ -33,7 +34,7 @@ router.get("/:text", async (req, res) => {
     console.log("text: " + text);
     // Ejecutar el procedimiento almacenado para obtener los detalles de todos los emprendimientos
     const result = await runStoredProcedure("EmprendeTEC_SP_GetFilterPosts", {
-      IN_pattern: text,
+      IN_pattern: text
     });
 
     // Verificar si se encontraron datos de emprendimientos
@@ -96,7 +97,7 @@ router.get("/usuario/:id", async (req, res) => {
   } catch (error) {
     console.error("Error al obtener emprendimientos:", error);
     res.status(500).json({
-      message: "Ocurrió un error al obtener los emprendimientos.",
+      message: "Ocurrió un error al obtener los emprendimientos."
     });
   }
 });
@@ -105,7 +106,7 @@ router.get("/imagenes/:id", async (req, res) => {
   try {
     // Ejecutar el procedimiento almacenado para obtener las imagenes del emprendimiento solicitado
     const result = await runStoredProcedure("GetImagesPost", {
-      inPostID: id,
+      inPostID: id
     });
     console.log(result);
 
@@ -136,7 +137,7 @@ router.post(
         images,
         location,
         latitude,
-        longitude,
+        longitude
       } = req.body;
       const imageUrlsString = images.join(",");
 
@@ -147,7 +148,7 @@ router.post(
         IN_location: location,
         IN_latitude: latitude,
         IN_longitude: longitude,
-        IN_images: imageUrlsString,
+        IN_images: imageUrlsString
       });
 
       res.status(200).json({ message: "Proyecto guardado correctamente" });
@@ -171,7 +172,7 @@ router.put(
         images,
         location,
         latitude,
-        longitude,
+        longitude
       } = req.body;
       const imageUrlsString = images.join(",");
       await runStoredProcedure("EmprendeTEC_SP_UpdateEntrepreneurship", {
@@ -182,7 +183,7 @@ router.put(
         IN_location: location,
         IN_latitude: latitude,
         IN_longitude: longitude,
-        IN_images: imageUrlsString,
+        IN_images: imageUrlsString
       });
       res.status(200).json({ message: "Proyecto modificado correctamente" });
     } catch (error) {
@@ -191,5 +192,22 @@ router.put(
     }
   }
 );
+
+router.delete("/:id", checkPermissions(["Administrator", "Professor", "Student"], true), async (req, res) => {
+  const { id } = req.params;
+  const user = await currentUser(req);
+
+  try {
+    await runStoredProcedure("EmprendeTEC_SP_Posts_Delete", {
+      IN_postId: id,
+      IN_currentUserEmail: user.email
+    });
+    res.status(200).json({ message: "Emprendimiento eliminado correctamente." });
+  } catch (error) {
+    console.error("Error al eliminar el emprendimiento:", error);
+    const statusCode = (error?.cause ?? "").includes("permisos necesarios") ? 403 : 500;
+    res.status(statusCode).json({ message: error?.cause });
+  }
+});
 
 export default router;

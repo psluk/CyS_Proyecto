@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogBody,
   List,
-  ListItem,
+  ListItem, DialogFooter
 } from "@material-tailwind/react";
 import { validateImages } from "../../../common/utils/validations";
 import { Helmet } from "react-helmet-async";
@@ -22,7 +22,7 @@ import { useSession } from "../context/SessionContext";
 import { toast } from "react-toastify";
 import {
   uploadFilesAndGetDownloadURLs,
-  deleteImageByUrl,
+  deleteImageByUrl
 } from "../config/firebase-config.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
@@ -48,7 +48,7 @@ export default function CreateEntrepreneurship() {
     location: "",
     latitude: null,
     longitude: null,
-    building_number: null,
+    building_number: null
   });
   const [post, setPost] = useState([]);
   const [images, setImages] = useState([]);
@@ -60,6 +60,8 @@ export default function CreateEntrepreneurship() {
   const [isSelectingPlace, setIsSelectingPlace] = useState(false);
   const [isSearchingPlace, setIsSearchingPlace] = useState(false);
   const mapPopupRef = useRef(null);
+  const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
+
   useEffect(() => {
     if (!loading) {
       fetchPost();
@@ -68,7 +70,7 @@ export default function CreateEntrepreneurship() {
   }, [loading]);
 
   const [activeImage, setActiveImage] = useState(
-    <FontAwesomeIcon icon={faFile} beat size="2xl" />,
+    <FontAwesomeIcon icon={faFile} beat size="2xl" />
   );
   const [loading2, setLoading] = useState(false);
   const fileInputRef = useRef();
@@ -76,7 +78,7 @@ export default function CreateEntrepreneurship() {
   const fetchPost = async () => {
     try {
       const response = await axios.get(
-        `/api/emprendimientos/emprendimiento/${params.id}`,
+        `/api/emprendimientos/emprendimiento/${params.id}`
       );
 
       if (
@@ -93,7 +95,7 @@ export default function CreateEntrepreneurship() {
   const fetchImages = async () => {
     try {
       const response = await axios.get(
-        `/api/emprendimientos/imagenes/${params.id}`,
+        `/api/emprendimientos/imagenes/${params.id}`
       );
 
       if (
@@ -160,16 +162,16 @@ export default function CreateEntrepreneurship() {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: value,
+      [name]: value
     }));
     const email = getUserEmail();
     setFormData((prevFormData) => ({
       ...prevFormData,
-      userEmail: email,
+      userEmail: email
     }));
     setFormData((prevFormData) => ({
       ...prevFormData,
-      projectID: params.id,
+      projectID: params.id
     }));
   };
 
@@ -220,7 +222,7 @@ export default function CreateEntrepreneurship() {
               userEmail: formData.userEmail,
               location: formData.building_number
                 ? `${formData.building_number} - ${formData.location}`
-                : formData.location,
+                : formData.location
             });
           }
           navigate(-1);
@@ -229,6 +231,23 @@ export default function CreateEntrepreneurship() {
           toast.error(error?.response?.data?.message ?? defaultError);
         });
     }
+  };
+
+  const handleDelete = () => {
+    axios.delete(`/api/emprendimientos/${params.id}`).then(() => {
+      toast.success("¡Emprendimiento eliminado exitosamente!");
+      if (analytics) {
+        logEvent(analytics, "delete_entrepreneurship", {
+          name: post.Title,
+          description: post.Description,
+          userEmail: getUserEmail(),
+          location: post.Location
+        });
+      }
+      navigate(-1);
+    }).catch((error) => {
+      toast.error(error?.response?.data?.message ?? defaultError);
+    });
   };
 
   const handlePlaceSearch = async (e) => {
@@ -244,7 +263,7 @@ export default function CreateEntrepreneurship() {
 
         if (loadedLocations.length === 0) {
           toast.error(
-            "No se encontraron lugares. Intentá con otro término de búsqueda o por número de edificio.",
+            "No se encontraron lugares. Intentá con otro término de búsqueda o por número de edificio."
           );
         } else {
           if (loadedLocations.length === 1) {
@@ -254,7 +273,7 @@ export default function CreateEntrepreneurship() {
               location: location.name,
               latitude: location.latitude,
               longitude: location.longitude,
-              building_number: location.building_number,
+              building_number: location.building_number
             });
           } else {
             setIsSelectingPlace(true);
@@ -276,7 +295,7 @@ export default function CreateEntrepreneurship() {
         location: "",
         latitude: null,
         longitude: null,
-        building_number: null,
+        building_number: null
       });
     }
   }, [inPerson]);
@@ -291,7 +310,8 @@ export default function CreateEntrepreneurship() {
         <div className="flex w-full flex-col items-center justify-start bg-white p-2 md:p-4 lg:p-6">
           <div>
             {loading2 && (
-              <div className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center bg-black bg-opacity-50">
+              <div
+                className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center bg-black bg-opacity-50">
                 <Spinner color="blue" />
               </div>
             )}
@@ -399,7 +419,7 @@ export default function CreateEntrepreneurship() {
                               }
                               setFormData({
                                 ...formData,
-                                building_number: null,
+                                building_number: null
                               });
                               handleInputChange(e);
                             }}
@@ -419,7 +439,8 @@ export default function CreateEntrepreneurship() {
                             <FontAwesomeIcon icon={faMagnifyingGlass} />
                           </IconButton>
                         </div>
-                        <div className="w-full overflow-hidden rounded-xl border-2 border-gray-300 [&>.leaflet-container]:h-96">
+                        <div
+                          className="w-full overflow-hidden rounded-xl border-2 border-gray-300 [&>.leaflet-container]:h-96">
                           <MapContainer
                             center={tecCoordinates}
                             zoom={defaultZoom}
@@ -434,13 +455,13 @@ export default function CreateEntrepreneurship() {
                               <DraggableMarker
                                 position={[
                                   formData.latitude,
-                                  formData.longitude,
+                                  formData.longitude
                                 ]}
                                 setPosition={(position) => {
                                   setFormData({
                                     ...formData,
                                     latitude: position.lat,
-                                    longitude: position.lng,
+                                    longitude: position.lng
                                   });
                                 }}
                                 icon={CustomMapMarker}
@@ -472,6 +493,16 @@ export default function CreateEntrepreneurship() {
                   >
                     Modificar emprendimiento
                   </Button>
+                  <Button
+                    color="red"
+                    size="lg"
+                    className="mt-5 w-full justify-center"
+                    type="button"
+                    variant="gradient"
+                    onClick={() => setShowConfirmationDialog(true)}
+                  >
+                    Eliminar emprendimiento
+                  </Button>
                 </form>
               </Card>
             }
@@ -501,7 +532,7 @@ export default function CreateEntrepreneurship() {
                       location: location.name,
                       latitude: location.latitude,
                       longitude: location.longitude,
-                      building_number: location.building_number,
+                      building_number: location.building_number
                     });
                     setIsSelectingPlace(false);
                   }}
@@ -519,6 +550,42 @@ export default function CreateEntrepreneurship() {
               ))}
             </List>
           </DialogBody>
+        </Dialog>
+        {/* Confirmation dialog to delete post */}
+        <Dialog
+          size="xs"
+          open={showConfirmationDialog}
+          handler={() => setShowConfirmationDialog(false)}
+          className="flex max-h-[calc(100vh-5rem)] w-full flex-col"
+        >
+          <DialogHeader className="text-red-700">Eliminar emprendimiento</DialogHeader>
+          <DialogBody className="flex flex-col overflow-y-auto !px-5 !pt-0">
+            <Typography className="mb-5 text-sm">
+              ¿Estás seguro de que deseás eliminar este emprendimiento?
+            </Typography>
+          </DialogBody>
+          <DialogFooter
+            className="flex flew-row flex-nowrap w-full justify-end gap-2"
+          >
+            <Button
+              color="gray"
+              size="lg"
+              className="w-1/2 justify-center"
+              onClick={() => setShowConfirmationDialog(false)}
+              variant="gradient"
+            >
+              Cancelar
+            </Button>
+            <Button
+              color="red"
+              size="lg"
+              className="w-1/2 justify-center"
+              onClick={handleDelete}
+              variant="gradient"
+            >
+              Eliminar
+            </Button>
+          </DialogFooter>
         </Dialog>
       </main>
     </>
